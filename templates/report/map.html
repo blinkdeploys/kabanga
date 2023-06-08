@@ -1,0 +1,101 @@
+{% block content %}
+{% if user.is_authenticated %}
+{% load filtertags %}
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div
+    id="tooltip-{{ id }}"
+    name="tooltip"
+    class="cursor px-1 map-tooltip"
+>Map</div>
+<div style="position:relative">
+    <div
+        class="map-keys-box"
+    >
+        <div
+            class=" row pointer"
+            onclick="toggleById('map-key-layer-{{ id }}')"
+        >
+            <div class="col-1">
+                <i class="fa fa-circle f10"></i>
+            </div>
+            <div class="col-10 bold">Keys</div>
+        </div>
+        <div
+            id="map-key-layer-{{ id }}"
+            class="row"
+            {% if size == 'sm' %}hidden{% else %}{% endif %}
+        ></div>
+    </div>
+</div>
+<svg
+    id="map-svg-{{ id }}"
+    name="map-svg"
+    width="{% if size == 'lg' %}230{% else %}130{% endif %}mm"
+    height="{% if size == 'lg' %}310{% else %}110{% endif %}mm"
+    viewBox="{% if size == 'lg' %}0 0 230 310{% else %}0 0 130 110{% endif %}"
+    version="1.1"
+    xml:space="preserve"
+    inkscape:version="1.2.2 (b0a8486, 2022-12-01)"
+    sodipodi:docname="Ghana.svg"
+    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+>
+    <sodipodi:namedview
+        id="map-namedview-layer-{{ id }}"
+        name="map-namedview-layer"
+        pagecolor="#ffffff"
+        bordercolor="#000000"
+        borderopacity="0.25"
+        inkscape:showpageshadow="2"
+        inkscape:pageopacity="0.0"
+        inkscape:pagecheckerboard="0"
+        inkscape:deskcolor="#d1d1d1"
+        inkscape:document-units="mm"
+        showgrid="false"
+        inkscape:zoom="0.52397567"
+        inkscape:cx="-56.300324"
+        inkscape:cy="540.10141"
+        inkscape:window-width="1440"
+        inkscape:window-height="900"
+        inkscape:window-x="0"
+        inkscape:window-y="0"
+        inkscape:window-maximized="0"
+        inkscape:current-layer="layer1"
+        />
+
+    <defs
+        id="map-defs-layer-{{ id }}"
+        name="map-defs-layer"
+    >
+        <linearGradient
+            id="map-stroke-color-linear-gradient-{{ id }}"
+            name="map-stroke-color-linear-gradient"
+            inkscape:swatch="solid"
+        >
+            <stop
+                id="map-stroke-color-{{ id }}"
+                name="map-stroke-color"
+                style="stop-color:#dcd1d1;stop-opacity:1;"
+                offset="0"
+                />
+        </linearGradient>
+    </defs>
+
+    <g
+        id="map-g-layer-{{ id }}"
+        name="map-g-layer"
+        transform="scale({% if size == 'lg' %}1{% else %}.35{% endif %})"
+        title="GHANA"
+        inkscape:label="GHANA"
+        inkscape:groupmode="layer"
+        style="position:relative;"
+    ></g>
+</svg>
+
+
+{% endif %}
+{% endblock %}

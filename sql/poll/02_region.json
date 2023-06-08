@@ -1,0 +1,21 @@
+{
+    "name": "region",
+    "data": [
+        {"id": 1, "title": "ASHANTI", "nation_id": 1},
+        {"id": 2, "title": "AHAFO", "nation_id": 1},
+        {"id": 3, "title": "BONO", "nation_id": 1},
+        {"id": 4, "title": "BONO EAST", "nation_id": 1},
+        {"id": 5, "title": "CENTRAL", "nation_id": 1},
+        {"id": 6, "title": "EASTERN", "nation_id": 1},
+        {"id": 7, "title": "GREATER ACCRA", "nation_id": 1},
+        {"id": 8, "title": "NORTH EAST", "nation_id": 1},
+        {"id": 9, "title": "NORTHERN", "nation_id": 1},
+        {"id": 10, "title": "OTI", "nation_id": 1},
+        {"id": 11, "title": "SAVANNAH", "nation_id": 1},
+        {"id": 12, "title": "UPPER EAST", "nation_id": 1},
+        {"id": 13, "title": "UPPER WEST", "nation_id": 1},
+        {"id": 14, "title": "VOLTA", "nation_id": 1},
+        {"id": 15, "title": "WESTERN", "nation_id": 1},
+        {"id": 16, "title": "WESTERN NORTH"}
+    ]
+}

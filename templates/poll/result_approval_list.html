@@ -1,0 +1,488 @@
+{% extends 'base.html' %}
+{% block title %}Result Approvals{% endblock %}
+{% block content %}
+{% load filtertags %}
+
+{% if user.is_authenticated %}
+<div class="container">
+  
+
+  <div class="mt-4 mb-4">
+    <h2 class="mt-1 mb-1">{{ title }}</h2>
+    <div>
+      {% if is_approved %}
+      <span class="badge bg-info rounded-pill bold pointer">
+        APPROVED
+      </span>
+      {% endif %}
+      <a href="/reports/{{ selected_office_type }}/{{ selected_zone_level }}/{{ selected_zone }}">
+        VIEW REPORT
+      </a>
+    </div>
+    <div
+      name="instructions-show"
+      class="row mt-1 mb-4 pointer"
+      onClick="
+        toggleByName('instructions', true);
+        toggleByName('instructions-show', false);
+      "
+    >
+      <div class="col">
+        <i class="fa-regular fa-circle-question"></i>
+        VIEW INSTRUCTIONS
+      </div>
+    </div>
+    <div
+      hidden
+      name="instructions"
+      class="row mt-1 mb-4 pointer"
+      onClick="
+        toggleByName('instructions', false);
+        toggleByName('instructions-show', true);
+      "
+    >
+      <div class="col-6">
+        <i class="fa-regular fa-circle-question"></i>
+        CLOSE INSTRUCTIONS
+      </div>
+    </div>
+    <div class="row mt-1 mb-3" name="instructions" hidden>
+      <div class="row">
+        <div class="col-4">
+          <div class="row">
+            <div class="col-1" align="right">
+              <i class="fa fa-regular fa-circle"></i>
+            </div>
+            <div class="col">
+              <div class="bold mb-2">Select a Zone</div>
+              <ol>
+                <li class="mb-2">Ensure that an appropriate zone is selected in the provided select box. This is the exact geographical area you would like to review.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="row">
+            <div class="col-1" align="right">
+              <i class="fa fa-arrow-right"></i>
+            </div>
+            <div class="col">
+              <div class="bold mb-2">Enter/Review EC Vote Counts</div>
+              <ol>
+                <li class="mb-2">To review the results, enter total votes from the EC Summary sheet for each party</li>
+                <li class="mb-2">Next, ensure that each row has a green check mark at the last column, by clicking the EC Total input box</li>
+                <li class="mb-2">To copy total votes value from Own Total Votes column to EC Total Votes column, click on the right arrow for the party.</li>
+                <li class="mb-2">To batch copy all total votes values from Own Total Votes column to EC Total Votes column, click on the right arrow in the header row.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="row">
+            <div class="col-1" align="right">
+              <i class="fa fa-regular fa-square"></i>
+            </div>
+            <div class="col">
+              <div class="bold mb-2">Save Approval</div>
+              <ol>
+                <li class="mb-2">Click on the checkbox to certify review</li>
+                <li class="mb-2">Next, click on the Save Result Approval button to submit</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-1"></div>
+    </div>
+
+
+  {% if messages %}
+  <div class="row">
+      <div class="col-3"></div>
+      <div class="col-6 justify-content-center alert alert-primary" role="alert">
+          <div class="row">
+              <div class="col" align="center">
+                  <i class="fa-regular fa-lightbulb"></i>
+              </div>
+              <div class="col-11">
+                  {% for message in messages %}
+                      <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                          {{ message }}
+                      </div>
+                  {% endfor %}
+              </div>
+          </div>
+      </div>
+      <div class="col-3"></div>
+  </div>
+  {% endif %}
+
+
+  <div class="row">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-3">
+      Select Office:
+      <select
+        id="office-type"
+        class="form-control"
+        onchange="selectApprovalOffice(this)"
+      >
+        <option value="">select office ({{ office_types|count }})</option>
+        {% if office_types is not None %}
+          {% for office_type in office_types %}
+            <option
+              value="{{ office_type|lower }}"
+              {% if office_type|lower == selected_office_type|lower %}selected="selected"{% endif %}
+            >{{ office_type }}</option>
+          {% endfor %}
+        {% endif %}
+      </select>
+    </div>
+    {% if selected_office_type is not None %}
+    <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-3">
+      Select Zone Level:
+      <select
+        id="zone-level"
+        class="form-control"
+        data-value="{{ selected_zone_level }}"
+        onchange="selectApprovalZoneLevel(this)"
+      >
+        <option value="">select zone type ({{ zone_levels|count }})</option>
+        {% if zone_levels is not None %}
+          {% for zone_level in zone_levels %}
+            <option
+              value="{{ zone_level|lower }}"
+              {% if zone_level|lower == selected_zone_level|lower %}selected="selected"{% endif %}
+            >{{ zone_level }}</option>
+          {% endfor %}
+        {% endif %}
+      </select>
+    </div>
+    {% endif %}
+    {% if selected_office_type is not None and selected_zone_level is not None %}
+    <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-3">
+      Search Zone:
+      <input type="input"
+        class="form-control"
+        data-src="zone-filter"
+        data-value="{{ selected_zone }}"
+        placeholder="find {{ selected_zone_level|capitalize }}"
+        onkeyup="fetchZones(this, '{{ selected_zone_level }}', populateZones)"
+      />
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-3">
+      Select Zone:
+      (<span id="zone-count">{{ zones|count }} options</span>)
+      <select
+        id="zone"
+        class="form-control"
+        data-value="{{ selected_zone }}"
+        onchange="selectApprovalZone(this)"
+      >
+        <option value="0">select zone ({{ zones|count }})</option>
+        {% if zones is not None %}
+          {% for zone in zones %}
+            <option
+              value="{{ zone.value }}"
+              {% if zone.value == selected_zone %}selected="selected"{% endif %}
+            >{{ zone.title }}</option>
+          {% endfor %}
+        {% endif %}
+      </select>
+    </div>
+    {% endif %}
+  </div>
+
+
+  <form
+    method="post"
+    id="result_sheet_approval_form"
+    method="post"
+    action="/poll/approve/{{ selected_office_type|lower }}/{{ selected_zone_level|lower }}/{{ selected_zone }}"
+    enctype="multipart/form-data"
+    content_type='application/json'
+    class="mx-3"
+  >
+    {% csrf_token %}
+
+
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <td>Save Approval</td>
+        </tr>
+      </thead>
+      <tbody id="approval_certify" hidden>
+        <tr>
+          <td>
+            <div class="row mb-3">
+              
+              <div class="col-1"></div>
+        
+              <div class="col">
+                <div class="mt-2 mb-2 row">
+        
+                  <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mt-3 mb-3">
+                    {% if result_sheet_url is not None and result_sheet.result_sheet.url is not None %}
+                    <input type="hidden" name="result_sheet_file" class="form-control" value="{{ result_sheet_url }}" />
+                    {% endif %}
+                    <input type="file" name="result_sheet" class="form-control" placeholder="upload result sheet" />
+                    <i>(requirements JPEG, MPEG, GIF, 4kb in size)</i>
+                  </div>
+                  <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mt-3 mb-3">
+                    <div class="mb-2">Upload Statement of EC Summary {{ selected_zone_level|capitalize }} Sheet</div>
+                    <div align="right">
+                      <a href="#"
+                        class="btn btn-light rounded-pill"
+                      >Upload EC Summary {{ selected_zone_level|capitalize }} Sheet</a>
+                    </div>  
+                  </div>
+        
+        
+                  <div class="mb-2 mt-1 col-12 bold">Certify Result Approval</div>
+                  <div class="col-1" align="right">
+                      <input type="checkbox" id="approval_certify_check" name="approval_certify_check" onchange="ecSummaryTotalChange()" />
+                  </div>
+                  <div class="col mb-3">
+                      <label for="approval_certify_check">
+                          I have read and verified all the vote counts from the supplied EC Summary Sheet and found in accordance with the numbers on this form.
+                      </label>
+                  </div>
+        
+                  <div class="col-4 mt-3">
+                    <a href="#"
+                      class="btn btn-light rounded-pill"
+                      onclick="
+                        batchCopyByName('approval_total_valid_votes', 'approval_total_votes_ec');
+                        ecSummaryTotalChange()
+                      "
+                    >Copy Results</a>
+            
+                    <input type="submit"
+                      class="btn btn-primary rounded-pill"
+                      onClick="result_sheet_form.submit()"
+                      value="Approve Results"
+                    />
+                  </div>
+            
+        
+                </div>
+              </div>
+        
+              <div class="col-1"></div>
+        
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+
+
+    <table class="table table-hover">
+      <thead>
+          <tr>
+            <td colspan="6">
+              Enter/Review EC Vote Counts
+            </td>
+          </tr>
+      <thead>
+      </thead>
+          <tr>
+              <td hidden class="scope bold" width="3%">ID</td>
+              <td class="scope bold" width="5%">Party</td>
+              <td class="scope bold" width="40%"></td>
+              <td class="scope td-ok" width="10%" align="right">
+                <div class="row">
+                  <div class="col bold">
+                    Total Valid Votes
+                  </div>
+                  <i
+                    title="Copy All"
+                    class="fa fa-arrow-right col-1 pointer"
+                    onclick="
+                      batchCopyByName('approval_total_valid_votes', 'approval_total_votes_ec');
+                      ecSummaryTotalChange()
+                    "
+                  ></i>
+                </div>
+              </td>
+              <td hidden class="scope bold" width="10%" align="right">
+                Total Invalid Votes
+              </td>
+              <td class="scope bold td-warning" width="10%" align="right">
+                Total Votes (EC)
+              </td>
+              <td class="scope bold td-alert" width="10%" align="right">EC Variance</td>
+              <td class="scope bold" width="5%" align="center">
+                <span class="pointer">
+                  <i class="fa fa-regular fa-circle" id="row-check-all"
+                    onclick="checkAllRows()"
+                  ></i>
+                </span>
+              </td>
+          </tr>
+      </thead>
+      <tbody>
+      {% if data is not None %}
+        {% for row in data %}
+          {% with count=forloop.counter0 %}
+          <tr scope="row">
+            <td hidden><input type="checkbox" /></td>
+            <td valign="middle">
+              {{ row.party__code }}
+            </td>
+            <td valign="middle">
+              <div>{{ row.party__title }}</div>
+              {% if selected_office_type|lower == 'presidential' %}
+              {% for candidate in row.candidates %}
+                <div>{{ candidate.full_name }}</div>
+              {% endfor %}
+              {% endif %}
+              <input
+                type="hidden"
+                id="approval_party_id_{{ count }}"
+                name="approval_party_id"
+                class="form-control"
+                value="{{ row.party__id }}" />
+            </td>
+            <td class="td-ok" align="right" valign="middle">
+              <div class="row">
+                <div class="col"
+                  id="approval_total_valid_votes_{{ count }}"
+                  name="approval_total_valid_votes"
+                >{{ row.total_votes }}</div>
+                <i
+                  class="fa fa-arrow-right col-1 pointer"
+                  onclick="copyById('approval_total_valid_votes_{{ count }}', 'approval_total_votes_ec_{{ count }}')"
+                ></i>
+              </div>
+            </td>
+            <td hidden align="right" valign="middle">
+              {% if row.total_invalid_votes == 0 %}
+                {{ row.total_invalid_votes }}
+              {% else %}-{% endif %}
+            </td>
+            <td align="right" class="td-warning" valign="middle">
+              <input
+                id="approval_total_votes_ec_{{ count }}"
+                name="approval_total_votes_ec"
+                class="form-control"
+                type="number" min="0"
+                onkeyup="ecSummaryTotalChange()"
+                onfocus="checkRow('row-check-{{ count }}')"
+                placeholder="enter EC Summary Sheet total"
+                value="{{ row.total_votes_ec }}" />
+            </td>
+            <td align="right" class="td-alert" valign="middle">
+              <div name="total_variance" id="total_variance">
+                {% if row.total_ec_variance == 0 %}
+                  -
+                {% else %}
+                  {{ row.total_ec_variance }}
+                {% endif %}
+              </div>
+            </td>
+            <td class="scope bold" width="5%" align="center">
+              <span class="pointer">
+                <i
+                  id="row-check-{{ count }}"
+                  name="row-checks"
+                  class="fa fa-regular {% if row.total_votes_ec > 0 %}fa-circle-check text-success{% else %}fa-circle text-danger{% endif %}"
+                  onclick="unCheckRow(this.id)"
+                ></i>
+              </span>
+            </td>
+          </tr>
+          {% endwith %}
+        {% endfor %}
+        {% if totals is not None %}
+          <tr scope="row">
+            <td hidden><input type="checkbox" /></td>
+            <td class="bold">
+              {{ totals.party__code }}
+            </td>
+            <td class="bold">
+              {{ totals.party__title }}
+            </td>
+            <td class="bold td-ok" align="right" valign="middle">
+              {{ totals.total_votes }}
+            </td>
+            <td hidden class="bold td-warning" align="right" valign="middle">{{ totals.total_invalid_votes }}</td>
+            <td class="td-warning" align="right" valign="middle"><div id="approval_total_votes_ec_total" class="bold">{{ totals.total_votes_ec }}</div></td>
+            <td class="td-alert" align="right" valign="middle"><div id="total_variance_total" class="bold">-</div></td>
+            <td class="scope bold" width="5%"></td>
+          </tr>
+        {% endif %}
+      {% endif %}
+      </tbody>
+    </table>
+
+  </form>
+
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<style>
+.choices {
+  /* Add your custom styles here */
+  background-color: #fff;
+  border: 1px solid #ccc;
+  color: #333;
+  height: 38px;
+}
+
+.choices__inner {
+  background-color: #fff;
+  height: 35px !important;
+  padding: 3px 5px;
+}
+
+/* Customize the appearance of the dropdown list
+.choices__list {
+  background-color: #fff;
+  border: 1px solid #ccc;
+}
+*/
+
+/* Style each individual option in the dropdown list */
+.choices__item {
+  font-size: 16px !important;
+  /* padding: 5px 10px; */
+  cursor: pointer;
+}
+
+/* Style the selected option
+.choices__item--selected {
+  background-color: #007bff;
+  color: #fff;
+}
+*/
+
+/* Customize the appearance of the dropdown container
+.choices__list--dropdown {
+  max-height: 200px;
+  overflow-y: auto;
+}
+*/
+</style>
+<script>
+  if (false) {
+    const select = new Choices('#zone', {
+      searchEnabled: true,
+      allowHTML: true,
+      itemSelectText: '', // Set the itemSelectText to an empty string
+      classNames: {
+        // containerOuter: 'form-controlx choices',
+        // input: 'form-control',
+      },
+    });
+  }
+</script>
+
+<script src="/static/table.js"></script>
+
+{% endif %}
+
+{% endblock %}

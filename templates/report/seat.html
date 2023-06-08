@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+{% load filtertags %}
+
+<div class="mx-4">
+    <div class="row mt-4 mb-4">
+      <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 mb-3">
+        <h2 class="">{{ title }}</h2>
+        <div class="upper">
+        {% if party is not None %}
+            <div>{{ party.title }} ({{ party.code }}) {{ reports|count }} seats won</div>
+            <a href="{% url 'parliamentary_seat_report' %}">all parties</a>
+        {% endif %}
+            {% if party is None %}
+            {{ seat_percentage }}% {{ reports|count }} declared {{ seats|count }} total
+            {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col table-responsive">
+
+        <table class="table">
+          <thead>
+            <tr>
+                <td class="bold">Party</td>
+                <td class="bold">Candidate</td>
+                <td class="bold">Seat (Constituency)</td>
+                <td class="bold">Position</td>
+            </tr>
+          </thead>
+
+            {% if reports is not None %}
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td>
+                        <a href="{% url 'parliamentary_seat_party_report' pk=report.candidate__party__pk %}">
+                            {{ report.candidate__party__code }}
+                        </a>
+                    </td>
+                    <td>{{ report.candidate__first_name }} {{ report.candidate__last_name }}</td>
+                    <td>
+                        <a href="{% url 'constituency_parliamentary_report' cpk=report.constituency__pk %}">
+                            {{ report.constituency__title }}
+                        </a>
+                    </td>
+                    <td>{{ report.candidate__position__title }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            {% endif %}
+
+        </table>
+
+    </div>
+  
+
+</div>  
+
+{% endif %}
+{% endblock %}

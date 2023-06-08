@@ -1,0 +1,339 @@
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+
+{% if user.is_authenticated %}
+
+<div align="center" class="logo f70">kabanga</div>
+
+<div class="container"
+  id="containers-navigation" name="containers"
+>
+  {% include 'layout/nav_grid.html' with user=user return=return data=navigation only%}
+</div>
+
+{% else %}
+
+<div class="container mt-5" align="center">
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">Log In</a>
+</div>
+
+{% endif %}
+
+<div class="row" align="center" hidden>
+  <div class="col">
+      <input
+        class="font-control"
+        placeholder="search stores and items..."
+        type="text"
+        style="margin: 0px; padding: 10px 15px; width: 500px;"
+        />
+  </div>
+</div>
+
+<div class="row mx-4 px-4">
+
+  <div class="col-12 col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-3 mt-4">
+
+    <h3 class="mx-1x my-3">Sections</h3>
+    <div class="row">
+      {% for side in sides %}
+        <a href="#" class="text-dark mb-2">{{ side.title }}</a>
+      {% endfor %}
+    </div>
+
+    <h3 class="mx-1x my-3">Sides</h3>
+    <div class="row">
+      {% for side in sections %}
+        <a href="#" class="text-dark mb-2">{{ side.title }}</a>
+      {% endfor %}
+    </div>
+
+    <h3 class="mx-1x my-3">Prices</h3>
+    <div class="row">
+      {% for side in prices %}
+        <a href="#" class="text-dark mb-2">{{ side.title }}</a>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  <div class="col-12 col-xs-12 col-sm-12 col-md-9 col-lg-9 col-xl-9 mt-4">
+
+    <div class="row mt-3 mb-4">
+      <h3 class="mx-3">Meals</h3>
+
+      <div class="row mb-2">
+        {% for product in highlights %}
+        <a href="#" class="card-columns col-12 col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 text-dark">
+          <div class="card border-light shadow-sm bg-light mb-3">
+            <div class="card-body row">
+              <div class="col-12 col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 mt-1">
+                <img
+                  src="{{ product.image }}"
+                  style="
+                    border-radius: 8px;
+                  "
+                  width="100%"
+                  />
+              </div>
+              <div class="col-12 col-xs-12 col-sm-12 col-md-8 col-lg-8 col-xl-8">
+                <div class="card-title">
+                  <span class="boldx f20"
+                    style="padding: 3px;"
+                  >{{ product.price }}</span>
+                  {% if product.was is not None %}
+                  <span class="boldx f18x bg-warning"
+                    style="padding: 3px; border-radius: 5px;"
+                  >{{ product.was }}</span>
+                  {% endif %}
+                </div>
+                <div class="card-title bold">{{ product.title }}</div>
+                <p class="card-text">{{ product.detail }}</p>
+              </div>
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+
+      {% for product in meals %}
+      <a href="#"
+        class="card-columns col-12 col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 text-dark"
+      >
+        <!--div class="card border-light shadow-sm {{ product.theme }} mb-3">
+        </div-->
+        <div class="card-body">
+          <div
+            style="position:relative;"
+          >
+            <div class="text-dark bg-warning f9"
+              style="
+                position:absolute; bottom:20px; left:20px; z-index:10;
+                border-radius: 10px;
+              "
+            >
+              <i class="fa fa-plus p-1"></i>
+              <i class="fa fa-minus p-1"></i>
+              <i class="fa-regular fa-heart p-1"></i>
+            </div>
+            <img
+              src="{{ product.image }}"
+              style="
+                border-radius: 8px;
+              "
+              width="100%"
+              />
+          </div>
+          <div class="card-title">
+            <span class="boldx f18"
+              style="padding: 3px;"
+            >{{ product.price }}</span>
+            {% if product.was is not None %}
+            <span class="boldx f18x bg-warning"
+                style="padding: 0px 4px; border-radius: 5px;"
+            >{{ product.was }}</span>
+            {% endif %}
+          </div>
+          <div class="card-title boldx">
+            <span class="mr-2">{{ product.title }} </span>
+          </div>
+          <p class="card-text f12 mb-0">{{ product.detail }}</p>
+          {% if product.rating is not None %}
+          <div class="bold mt-0">
+            <div style="float:left; overflow: hidden;"><i class="fa fa-star f11"></i></div>
+            <div style="padding-top:1px;">{{ product.rating }}</div>
+          </div>
+          {% endif %}
+      </div>
+      </a>
+      {% endfor %}
+    </div>
+    
+    <div class="row mt-4 mb-4">
+      <h3 class="mx-3">Spices</h3>
+
+      <div class="row mb-2">
+        {% for product in spice_highlights %}
+        <a href="#" class="card-columns col-12 col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 text-dark">
+          <div class="card border-light shadow-sm bg-light mb-3">
+            <div class="card-body row">
+              <div class="col-12 col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 mt-1">
+                <img
+                  src="{{ product.image }}"
+                  style="
+                    border-radius: 8px;
+                  "
+                  width="100%"
+                  />
+              </div>
+              <div class="col-12 col-xs-12 col-sm-12 col-md-8 col-lg-8 col-xl-8">
+                <div class="card-title">
+                  <span class="boldx f20"
+                    style="padding: 3px;"
+                  >{{ product.price }}</span>
+                  {% if product.was is not None %}
+                  <span class="boldx f18x bg-warning"
+                    style="padding: 3px; border-radius: 5px;"
+                  >{{ product.was }}</span>
+                  {% endif %}
+                </div>
+                <div class="card-title bold">{{ product.title }}</div>
+                <p class="card-text">{{ product.detail }}</p>
+              </div>
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+
+      {% for product in spices %}
+      <a href="#"
+        class="card-columns col-12 col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 text-dark"
+      >
+        <!--div class="card border-light shadow-sm {{ product.theme }} mb-3">
+        </div-->
+        <div class="card-body">
+          <div
+            style="position:relative;"
+          >
+            <div class="text-dark bg-warning f9"
+              style="
+                position:absolute; bottom:20px; left:20px; z-index:10;
+                border-radius: 10px;
+              "
+            >
+              <i class="fa fa-plus p-1"></i>
+              <i class="fa fa-minus p-1"></i>
+              <i class="fa-regular fa-heart p-1"></i>
+            </div>
+            <img
+              src="{{ product.image }}"
+              style="
+                border-radius: 8px;
+              "
+              width="100%"
+              />
+          </div>
+          <div class="card-title">
+            <span class="boldx f18"
+              style="padding: 3px;"
+            >{{ product.price }}</span>
+            {% if product.was is not None %}
+            <span class="boldx f18x bg-warning"
+                style="padding: 0px 4px; border-radius: 5px;"
+            >{{ product.was }}</span>
+            {% endif %}
+          </div>
+          <div class="card-title boldx">
+            <span class="mr-2">{{ product.title }} </span>
+          </div>
+          <p class="card-text f12 mb-0">{{ product.detail }}</p>
+          {% if product.rating is not None %}
+          <small class="bold mt-0"><span class="f14" style="line-height:1rem !important;">{{ product.rating }}</span> <i class="fa fa-star f11"></i></small>
+          {% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    
+    <div class="row mb-4">
+      <h3 class="mx-3">Spice Deals</h3>
+
+      <div class="row mb-2">
+        {% for product in deal_highlights %}
+        <a href="#" class="card-columns col-12 col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 text-dark">
+          <div class="card border-light shadow-sm bg-light mb-3">
+            <div class="card-body row">
+              <div class="col-12 col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 mt-1">
+                <img
+                  src="{{ product.image }}"
+                  style="
+                    border-radius: 8px;
+                  "
+                  width="100%"
+                  />
+              </div>
+              <div class="col-12 col-xs-12 col-sm-12 col-md-8 col-lg-8 col-xl-8">
+                <div class="card-title">
+                  <span class="boldx f20"
+                    style="padding: 3px;"
+                  >{{ product.price }}</span>
+                  {% if product.was is not None %}
+                  <span class="boldx f18x bg-warning"
+                    style="padding: 3px; border-radius: 5px;"
+                  >{{ product.was }}</span>
+                  {% endif %}
+                </div>
+                <div class="card-title bold">{{ product.title }}</div>
+                <p class="card-text">{{ product.detail }}</p>
+              </div>
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+
+      {% for product in spice_deals %}
+      <a href="#"
+        class="card-columns col-12 col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 text-dark"
+      >
+        <!--div class="card border-light shadow-sm {{ product.theme }} mb-3">
+        </div-->
+        <div class="card-body">
+          <div
+            style="position:relative;"
+          >
+            <div class="text-dark bg-warning f9"
+              style="
+                position:absolute; bottom:20px; left:20px; z-index:10;
+                border-radius: 10px;
+              "
+            >
+              <i class="fa fa-plus p-1"></i>
+              <i class="fa fa-minus p-1"></i>
+              <i class="fa-regular fa-heart p-1"></i>
+            </div>
+            <img
+              src="{{ product.image }}"
+              style="
+                border-radius: 8px;
+              "
+              width="100%"
+              />
+          </div>
+          <div class="card-title">
+            <span class="boldx f18"
+              style="padding: 3px;"
+            >{{ product.price }}</span>
+            {% if product.was is not None %}
+            <span class="boldx f18x bg-warning"
+                style="padding: 0px 4px; border-radius: 5px;"
+            >{{ product.was }}</span>
+            {% endif %}
+          </div>
+          <div class="card-title boldx">
+            <span class="mr-2">{{ product.title }} </span>
+          </div>
+          <p class="card-text f12 mb-0">{{ product.detail }}</p>
+          {% if product.rating is not None %}
+          <small class="bold mt-0"><span class="f14" style="line-height:1rem !important;">{{ product.rating }}</span> <i class="fa fa-star f11"></i></small>
+          {% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+
+</div>
+
+
+
+  
+{% endblock %}

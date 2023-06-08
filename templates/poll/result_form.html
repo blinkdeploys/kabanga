@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block title %}Nation{% endblock %}
+
+{% block content %}
+
+{% include 'layout/form.html' with title="Result" list_path="poll/results" elements=form user=user only%}
+
+{% endblock %}

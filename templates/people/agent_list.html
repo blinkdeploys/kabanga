@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% if user.is_authenticated %}
+
+{% block content %}
+
+{% include 'layout/table.html' with title=title row_link="people/agent/" next_link=next_link prev_link=prev_link delete_link='#' columns=columns highlight_column='full_name' data=data user=user only%}
+  
+{% endblock %}
+
+{% endif %}

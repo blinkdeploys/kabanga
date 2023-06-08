@@ -1,0 +1,20 @@
+{
+    "name": "party",
+    "data": [
+        {"id": 1, "code": "NDC", "title": "National Democratic Congress"},
+        {"id": 2, "code": "NPP", "title": "New Patriotic Party"},
+        {"id": 3, "code": "GUM", "title": "Ghana Union Movement"},
+        {"id": 4, "code": "APC", "title": "All People's Congress"},
+        {"id": 5, "code": "PPP", "title": "Progressive People's Party"},
+        {"id": 6, "code": "GPP", "title": "Ghana Freedom Party"},
+        {"id": 7, "code": "NDP", "title": "National Democratic Party"},
+        {"id": 8, "code": "CPP", "title": "Convention People's Party"},
+        {"id": 9, "code": "GCPP", "title": "Great Consolidated Popular Party"},
+        {"id": 10, "code": "UFP", "title": "United Front Party"},
+        {"id": 11, "code": "UPP", "title": "United Progressive Party"},
+        {"id": 12, "code": "PAP", "title": "People's Action Party"},
+        {"id": 13, "code": "LPG", "title": "Liberal Party of Ghana"},
+        {"id": 14, "code": "PNC", "title": "People's National Convention"},
+        {"id": 15, "code": "IND", "title": "Independent"}
+    ]
+}

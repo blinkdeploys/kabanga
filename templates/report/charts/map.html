@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+{% load filtertags %}
+
+
+<div id="tooltip"
+    class="cursor px-1"
+    style="position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 7px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: none;
+            "
+>Map</div>
+
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div class="row">
+    <div class="col">
+    </div>
+    <div class="col-4">
+        <svg
+            id="map-svg"
+            width="210mm"
+            height="297mm"
+            viewBox="0 0 210 297"
+            version="1.1"
+            xml:space="preserve"
+            inkscape:version="1.2.2 (b0a8486, 2022-12-01)"
+            sodipodi:docname="Ghana.svg"
+            xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+            xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:svg="http://www.w3.org/2000/svg"
+        >
+           <sodipodi:namedview
+                id="map-namedview-layer"
+                pagecolor="#ffffff"
+                bordercolor="#000000"
+                borderopacity="0.25"
+                inkscape:showpageshadow="2"
+                inkscape:pageopacity="0.0"
+                inkscape:pagecheckerboard="0"
+                inkscape:deskcolor="#d1d1d1"
+                inkscape:document-units="mm"
+                showgrid="false"
+                inkscape:zoom="0.52397567"
+                inkscape:cx="-56.300324"
+                inkscape:cy="540.10141"
+                inkscape:window-width="1440"
+                inkscape:window-height="900"
+                inkscape:window-x="0"
+                inkscape:window-y="0"
+                inkscape:window-maximized="0"
+                inkscape:current-layer="layer1"
+                />
+        
+            <defs id="map-defs-layer">
+        
+                <linearGradient
+                    id="map-stroke-color-linear-gradient"
+                    inkscape:swatch="solid"
+                >
+                    <stop
+                        id="map-stroke-color"
+                        style="stop-color:#dcd1d1;stop-opacity:1;"
+                        offset="0"
+                        />
+                </linearGradient>
+            </defs>
+            
+            <g
+                id="map-g-layer"
+                transform="scale(.5)"
+                title="GHANA"
+                inkscape:label="GHANA"
+                inkscape:groupmode="layer"
+            >
+            </g>
+        </svg>
+    </div>
+    <div class="col">
+    </div>
+</div>
+
+
+<script src="/static/map.js"></script>
+
+<script>
+buildMap()
+</script>
+{% endif %}
+{% endblock %}

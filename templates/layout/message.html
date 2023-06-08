@@ -1,0 +1,23 @@
+{% if messages %}
+<div class="row">
+    <div class="col-12 alert alert-primary" role="alert">
+        <div class="row">
+            <div class="col" align="center">
+                <!--
+                <i class="fa fa-check-to-slot"></i>
+                <i class="fa-solid fa-square-poll-vertical"></i>
+                <i class="fa-solid fa-square-poll-horizontal"></i>
+                -->
+                <i class="fa-regular fa-lightbulb"></i>
+            </div>
+            <div class="col-11">
+                {% for message in messages %}
+                    <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

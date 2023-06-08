@@ -1,0 +1,56 @@
+<div>
+    <div class="bold mb-4 mt-4 mx-1 row">
+        <div
+            align="center"
+            class="col-12 col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12"
+        >
+            <h3>Welcome {{ user.username }}!</h3>
+            <span class="rounded-pill btn btn-light">My Account</span>
+            <span class="rounded-pill btn btn-light">Cart (12 items)</span>
+        </div>
+
+        <div class="col d-none">
+            <p><a href="{% url 'logout' %}">Log Out</a></p>
+        </div>
+
+        <div class="col-12 mb-3">
+            {% if return.path is not None %}
+            <a href="{{ return.path }}">
+                <i class="fa fa-angle-left"></i>
+                {{ return.title }}
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        {% for col in data %}
+            <div class="card-columns col-12 col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
+                {% for row in col %}
+                <a href="{{ row.url }}"
+                    class="card border-light shadow-sm {{ row.theme }} mb-3"
+                >
+                    <div class="row">
+                        <div class="col-4 mx-2 my-2">
+                            <img
+                                src="{% if row.image is not None %}{{ row.image }}{% else %}https://img.freepik.com/free-vector/beautiful-frame-with-edges-cooking-herbs-placers-spices-wooden-dishes_1284-6093.jpg?size=338&ext=jpg{% endif %}"
+                                style="
+                                    border-radius: 8px;
+                                "
+                                width="100%"
+                                />
+                        </div>
+                        <div class="col">
+                            <div class="card-body">
+                                <div class="card-title bold">{{ row.title }}</div>
+                                <p class="card-text">{{ row.details }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+</div>

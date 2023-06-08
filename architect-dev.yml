@@ -1,0 +1,115 @@
+name: kabanga
+parameters:
+  django_secret_key:
+    default: warning-override-for-production
+  postgres_password:
+    default: warning-override-for-production
+secrets:
+  SECRET_KEY:
+    required: true
+  TIMEZONE:
+    required: true
+  POSTGRES_DB:
+    required: true
+  POSTGRES_USER:
+    required: true
+  POSTGRES_PASSWORD:
+    required: true
+  POSTGRES_PORT:
+    required: true
+  REDIS_USERNAME:
+    required: true
+  REDIS_PASSWORD:
+    required: true
+  REDIS_HOST:
+    required: true
+  REDIS_PORT:
+    required: true
+  REDIS_DB:
+    required: true
+  
+services:
+  db:
+    image: postgres
+    interfaces:
+      main:
+        port: 5432 # ${{ secrets.POSTGRES_PORT }}
+    environment:
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}  # ${{ parameters.postgres_password }}
+  redis:
+    image: redis:6
+    interfaces:
+      main:
+        port: 6379
+    command: redis-server
+  api:
+    build:
+      context: .
+    command: |
+      sh -c '
+        python manage.py collectstatic --noinput
+        python manage.py migrate --noinput
+        python manage.py populate
+        nohup python manage.py rqworker > rqworker.log
+        uwsgi --http "0.0.0.0:8000" --module kabanga.wsgi:application --master --processes 4 --threads 2 --static-map /static=/code/static
+      '
+    interfaces:
+      api-main:
+        port: 8000
+        ingress:
+          subdomain: www
+          path: /
+          enabled: true
+    environment:
+      DEBUG: 'False'
+      ALLOWED_HOST: '.${{ services.api.interfaces.api-main.ingress.host }}' # .${{ ingresses.web.host }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}  # ${{ parameters.django_secret_key }}
+      POSTGRES_DB: ${{ services.db.environment.POSTGRES_DB }}
+      POSTGRES_USER: ${{ services.db.environment.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ services.db.environment.POSTGRES_PASSWORD }}
+      POSTGRES_HOST: ${{ services.db.interfaces.main.host }}
+      POSTGRES_PORT: ${{ services.db.interfaces.main.port }}
+      FRONTEND_INTERNAL: ${{ services.api.interfaces.api-main.url }}
+      FRONTEND_EXTERNAL: ${{ services.api.interfaces.api-main.ingress.url }}
+    debug:
+      command: |
+        sh -c '
+          python manage.py migrate --noinput
+          python manage.py populate
+          python manage.py runserver 0.0.0.0:${{ services.api.interfaces.api-main.port }}
+        '
+      environment:
+        ALLOWED_HOST: '*'
+        DEBUG: 'True'
+      volumes:
+        code:
+          mount_path: /code
+          host_path: .
+      depends_on:
+        - 'db'
+  worker:
+    build:
+      context: .
+    reserved_name: redis-worker
+    environment:
+      REDIS_URL: redis://${{ secrets.REDIS_USERNAME }}:${{ secrets.REDIS_PASSWORD }}@${{ secrets.REDIS_HOST }}:${{ secrets.REDIS_PORT }}/${{ secrets.REDIS_DB }}
+      TZ: ${{ secrets.TIMEZONE }}
+      # APP_SETTINGS: server.config.DevelopmentConfig
+      ALLOWED_HOST: '.${{ services.api.interfaces.api-main.ingress.host }}'
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      POSTGRES_DB: ${{ services.db.environment.POSTGRES_DB }}
+      POSTGRES_USER: ${{ services.db.environment.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ services.db.environment.POSTGRES_PASSWORD }}
+      POSTGRES_HOST: ${{ services.db.interfaces.main.host }}
+      POSTGRES_PORT: ${{ services.db.interfaces.main.port }}
+    command: |
+      sh -c '
+        python manage.py rqworker
+      '
+    # volumes:
+      # - './services/web/project:/usr/src/app'
+    depends_on:
+      - redis
+      - api

@@ -1,0 +1,312 @@
+{% block content %}
+{% if user.is_authenticated %}
+{% load filtertags %}
+
+<div class="mx-4">
+  <div class="row mt-4 mb-4">
+    <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 mb-3">
+      <h2 class="">{{ title }}</h2>
+      <div class="upper">
+        {{ zone.title }}
+        {% if sub_zone_type is not None %}
+            ({{ columns|count }} {% if sub_zone_type_plural is None %}{{ sub_zone_type }}s{% else %}{{ sub_zone_type_plural }}{% endif %})
+        {% endif %}
+        {% if super_zone is not None %}<div><a href="{{ super_zone_link }}{% if zone_type != 'region' %}{{ super_zone.pk }}{% endif %}">{{ super_zone.title }}</a></div>{% endif %}
+      </div>
+    </div>
+    <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
+        <div>
+            {% include 'layout/search.html' with search_url=row_link q=request.GET.q only%}
+        </div>
+        <div class="row">
+            <div align="right" class="col mt-3">
+              {% if reports is None or reports|count == 0 %}
+              {% else %}
+                {% include 'layout/collate.html' with user=user jid=request.GET.jid only%}
+              {% endif %}
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="rowx">
+    {% if reports is None or reports|count == 0 %}
+      <div class="row">
+        <div class="col"></div>
+        <div class="col-12 col-xs-12 colsm-12 col-md-12 col-lg-6 col-xl-6" align="center">
+          <div class="mb-3">There are no results to display. Results might not have been updated. Please click on the collate results button below to updates the result sheets.</div>
+          <div class="mt-3">
+            {% include 'layout/collate.html' with user=user jid=request.GET.jid only%}
+          </div>
+        </div>
+        <div class="col"></div>
+      </div>
+    {% else %}
+    <div class="col table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <td class="td-sticky">
+              <div class="row">
+                <div class="col-1">
+                  <!--i class="fa fa-regular fa-circle"></i-->
+                  <a href="#row{{ party_key }}"
+                    id="report_candidate_show"
+                    onclick="toggleByName('report_candidate', true)"
+                  >
+                    <i class="fa fa-angle-down"></i>
+                  </a>
+                  <a href="#row{{ party_key }}"
+                    hidden
+                    id="report_candidate_hide"
+                    onclick="toggleByName('report_candidate', false)"
+                  >
+                    <i class="fa fa-angle-right"></i>
+                  </a>
+                </div>
+                <div class="col pointer" onclick="toggleSticky()">
+                  PARTY / CANDIDATE
+                </div>
+              </div>
+            </td>
+            <td align="center">
+                SEATS
+            </td>
+            <td hidden align="center">
+                MAX. VOTES
+            </td>
+            <td align="right">
+              PERCENTAGE (%)
+            </td>
+            <td align="right" class="{% if report.seats > 0 %}td-success{% else %}td-ok{% endif %}"
+              name="sum-columns" data-target="total-results--"
+            >
+              TOTAL VOTES
+            </td>
+            {% if sub_zone_type is not None %}
+            <td align="right" class="td-warning">
+              EC SUMMARY SHEET
+            </td>
+            <td align="right" class="td-alert">
+              VARIANCE
+            </td>
+            {% if columns is not None %}
+            {% for column in columns %}
+            <td align="right"
+              name="sum-columns" data-target="results-{{ column.pk }}"
+            >
+              <a href="{{ sub_zone_link }}{{ column.pk }}">
+                {% if column.code is not None %}{{ column.code }}{% else %}{{ column.title }}{% endif %}
+              </a>
+            </td>
+            {% endfor %}
+            {% endif %}
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% if reports is not None %}
+          {% for report in reports %}
+          <tr>
+            <td class="td-sticky" valign="top">
+              <div class="row">
+                <div class="col-1">
+                  <!-- <i class="fa fa-regular fa-circle"></i> -->
+                  {% with party_key=report.party_id %}
+                  <a name="row{{ party_key }}"></a>
+                  {% if seats is not None %}
+                    {% with party_values=seats|get_item:party_key %}
+                      {% if party_values|count > 0 %}
+                        <a href="#row{{ party_key }}"
+                          id="report_candidate{{ party_key }}_show"
+                          name="report_candidate_show"
+                          onclick="toggleById('report_candidate{{ party_key }}', true)"
+                        >
+                          <i class="fa fa-angle-down"></i>
+                        </a>
+                        <a href="#row{{ party_key }}"
+                          hidden
+                          id="report_candidate{{ party_key }}_hide"
+                          name="report_candidate_hide"
+                          onclick="toggleById('report_candidate{{ party_key }}', false)"
+                        >
+                          <i class="fa fa-angle-right"></i>
+                        </a>
+                      {% endif %}
+                    {% endwith %}
+                  {% endif %}
+                {% endwith %}
+
+                </div>
+                <div class="col boldx">
+                  <div class="row">
+                    <div class="col-3">
+                      {% if report.party_code is not None %}{{ report.party_code }}{% endif %}
+                    </div>
+                    <div class="col-9">
+                      {% if report.candidate_name is not None %}
+                        {{ report.candidate_name }}
+                      {% endif %}
+                    </div>
+                  </div>
+                  {% if seats is not None %}
+                    {% with party_key=report.party_id %}
+                      <div
+                        class="row"
+                        name="report_candidate"
+                        id="report_candidate{{ party_key }}"
+                        hidden
+                      >
+                        {% with party_values=seats|get_item:party_key %}
+                          {% for party_value in party_values %}
+                            {% if party_value.votes is not None %}
+                              <div class="col-3 mt-2 mb-2">
+                                <small>
+                                  <span class="badge btn-info bold pointer" title="{{ party_value.votes }} votes">{{ party_value.votes }}</span>
+                                </small>
+                              </div>
+                              <div class="col-9 mt-2 mb-2">
+                                <small>
+                                  <a href="/reports/parliamentary/constituency/{{ party_value.constituency_id }}">
+                                    <div>{{ party_value.candidates }}</div>
+                                    <div>{{ party_value.constituency }}</div>
+                                  </a>
+                                </small>
+                              </div>
+                            {% endif %}
+                          {% endfor %}
+                        {% endwith %}
+                      </div>
+                    {% endwith %}
+                  {% endif %}
+                </div>
+              </div>
+            </td>
+            <td align="center" class="{% if report.seats > 0 %}td-success{% endif %}">{% if report.seats > 0 %}{{ report.seats }}{% else %}-{% endif %}</td>
+            <td hidden align="center" class="{% if report.seats > 0 %}td-success{% endif %}">{% if report.max_votes is not None %}{{ report.max_votes }}{% else %}-{% endif %}</td>
+            <td name="percentage" class="{% if report.seats > 0 %}td-success{% endif %}" align="right">-</td>
+            <td align="right" class="td-ok"
+              name="total-votes" data-col="total-results--"
+              data-value="{% if report.votes > 0 %}{{ report.votes }}{% else %}0{% endif %}"
+            >
+              {{ report.votes }}
+            </td>
+            {% if sub_zone_type is not None %}
+            <td align="right" class="{% if report.seats > 0 %}td-success{% else %}td-warning{% endif %}">-</td>
+            <td align="right" class="{% if report.seats > 0 %}td-success{% else %}td-alert{% endif %}">-</td>
+            {% if columns is not None %}
+            {% for column in columns %}
+            {% with key='votes_'|add:column.title|make_snake %}
+            {% with cell_value=report|get_item:key %}
+            <td
+              class="{% if report.seats > 0 %}td-success{% endif %}"
+              align="right"
+              name="total-votes-{{ column.pk }}"
+              data-value="{% if cell_value > 0 %}{{ cell_value }}{% else %}0{% endif %}"
+            >
+              <div
+                data-col="results-{{ column.pk }}"
+              >
+                {% if cell_value > 0 %}
+                  {{ cell_value }}
+                {% else %}
+                  -
+                {% endif %}
+              </div>
+            </td>
+            {% endwith %}
+            {% endwith %}
+            {% endfor %}
+            {% endif %}
+            {% endif %}
+          </tr>
+          {% endfor %}
+          {% endif %}
+          <tr>
+            <td class="td-sticky">
+              <div class="row">
+                <div class="col-1"></div>
+                <div class="col-9 bold">
+                  <div class="d-none d-xs-none d-sm-none">TOTAL </div>VALID VOTES
+                </div>
+              </div>
+            </td>
+            <td align="center">-</td>
+            <td hidden align="center">-</td>
+            <td name="total-percentage" class="bold" align="right">-</td>
+            <td name="total-total-votes" class="bold td-ok" align="right"
+              id="total-total-results--"
+            >0</td>
+            {% if sub_zone_type is not None %}
+            <td align="right" class="td-warning">-</td>
+            <td align="right" class="td-alert">-</td>
+            {% if columns is not None %}
+            {% for column in columns %}
+            <td class="bold" align="right"
+              id="total-results-{{ column.pk }}"
+            >0</td>
+            {% endfor %}
+            {% endif %}
+            {% endif %}
+          </tr>
+          <tr>
+            <td class="td-sticky">
+              <div class="row">
+                <div class="col-1"></div>
+                <div class="col-9 bold">
+                  <div class="d-none d-xs-none d-sm-none">TOTAL </div>INVALID VOTES
+                </div>
+              </div>
+            </td>
+            <td align="center">-</td>
+            <td hidden align="center">-</td>
+            <td class="bold" align="right">0</td>
+            <td class="bold td-ok" align="right">0</td>
+            {% if sub_zone_type is not None %}
+            <td align="right" class="td-warning">-</td>
+            <td align="right" class="td-alert">-</td>
+            {% if columns is not None %}
+              {% for column in columns %}
+                <td class="bold" align="right">0</td>
+              {% endfor %}
+            {% endif %}
+            {% endif %}
+          </tr>
+          <tr>
+            <td class="td-sticky">
+              <div class="row">
+                <div class="col-1"></div>
+                <div class="col-9 bold">
+                  TOTAL VOTES
+                </div>
+              </div>
+            </td>
+            <td align="center">-</td>
+            <td hidden align="center">-</td>
+            <td class="bold" align="right">0</td>
+            <td class="bold td-ok" align="right">0</td>
+            {% if sub_zone_type is not None %}
+            <td class="td-warning" align="right">-</td>
+            <td class="td-alert" align="right">-</td>
+            {% if columns is not None %}
+            {% for column in columns %}
+            <td class="bold" align="right">0</td>
+            {% endfor %}
+            {% endif %}
+            {% endif %}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+
+calculateTotals()
+calculatePercentages()
+
+</script>
+{% endif %}
+{% endblock %}

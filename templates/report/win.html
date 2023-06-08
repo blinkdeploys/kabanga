@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+{% load filtertags %}
+
+<div class="mx-4">
+    <div class="row mt-4 mb-4">
+        <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 mb-3">
+            <h2 class="">{{ title }}</h2>
+            <div class="upper">{{ percentage }}% {{ reports|count }} declared {{ zones|count }} total</div>
+        </div>
+    </div>
+
+    <div class="col table-responsive">
+
+        <table class="table">
+            <thead>
+            <tr>
+                <td class="bold">Region</td>
+                <td class="bold">Party</td>
+                <td class="bold">Candidate</td>
+                <td class="bold">Position</td>
+                <td class="bold" width="10%" align="right">Collated Regional Votes</td>
+                <td class="bold" width="10%" align="right">Collated EC Votes</td>
+                <td class="bold" width="10%" align="right">Variance</td>
+            </tr>
+            </thead>
+            {% if reports is not None %}
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td>
+                        <a href="{% url 'region_presidential_report' rpk=report.region__pk %}">
+                            {{ report.region__title }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ report.party__code }} {{ report.party__title }}
+                    </td>
+                    <td>{{ report.candidates }}</td>
+                    <td>{{ report.position_title }}</td>
+                    <td align="right">{{ report.total_votes }}</td>
+                    <td align="right">{{ report.total_votes_ec }}</td>
+                    <td align="right">{{ report.total_variance }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            {% endif %}
+        </table>
+
+
+</div>  
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,1012 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% load filtertags %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<div class="containerx">
+    <div class="container">
+        <div class="mb-1x mx-1">
+            <h2 class="mt-4x mb-2">{{ title }}</h2>
+            <div class="mt-3x mb-2">
+            {% if positions is not None %}
+                <small style="display:inline;">
+                    <i class="fa fa-angle-left"></i> <a href="/poll/result/stations/">Polling Stations</a>
+                </small>
+                {% if parties is not None %}
+                    <small style="display:inline;">
+                        <i class="fa fa-angle-left"></i> <a href="/poll/result/station/{{ spk }}">Positions</a>
+                    </small>
+                {% endif %}
+            {% endif %}
+            </div>
+        </div>
+
+        {% include 'layout/message.html' with messages=messages only%}
+    </div>
+
+    <div class="row justify-content-md-center mx-1">
+        <div class="col-12 col-xs-12 col-sm-12 col-md-12 col-lg-11 col-xl-11">
+    
+            <table class="table table-dark-subtlex table-stripedx">
+                <!--stations-->
+                <thead>
+                    <tr>
+                        <td colspan="3">
+                            <div class="row">
+                                <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
+                                    <div class="bold upper">Polling Stations</div>
+                                </div>
+                                <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
+                                    {% include 'layout/search.html' with search_url='poll/result/stations/' q=request.GET.q only%}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+
+                </thead>
+
+                    {% if positions is None %}
+                    <tr>
+                        <td colspan="3">
+                            <div class="row">
+                                <div class="col-3 col-xs-3 col-sm-3 col-md-2 col-lg-2 col-xl-1 bold">
+                                    Station Code
+                                </div>
+                                <div class="col-7 col-xs-7 col-sm-7 col-md-8 col-lg-4 col-xl-5 bold">
+                                    Station Title
+                                </div>
+                                <div class="col-1 d-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block bold">
+                                    Approvals
+                                </div>
+                                <!--div class="col-2 d-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block bold">
+                                    Constituency
+                                </div>
+                                <div class="col-2 d-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block bold">
+                                    Region
+                                </div-->
+                                <div
+                                    class="col-2 col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-5 bold"
+                                    align="right"
+                                >
+                                <div class="row">
+                                    <div class="col-10">
+                                        <div class="row">
+                                            <div class="col-4 bold">
+                                                Presidential Votes
+                                            </div>
+                                            <div class="col-4 bold">
+                                                Parliamentary Votes
+                                            </div>
+                                            <div class="col-4 bold">
+                                                Total Votes
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col" align="right" hidden>
+                                    <i class="fa-regular fa-circle" title="has votes"></i>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endif %}
+
+
+                {% for station in stations %}
+                    <tr>
+                        <td colspan="3">
+                            <div class="row">
+                                <div class="col-3 col-xs-3 col-sm-3 col-md-2 col-lg-2 col-xl-1">
+                                    {{ station.code }}
+                                </div>
+                                <div class="col-7 col-xs-7 col-sm-7 col-md-8 col-lg-4 col-xl-5">
+                                    <a href="/poll/result/station/{{ station.id }}">
+                                        {{ station.title }}
+                                    </a>
+                                    {{ station.constituency__title }} Constituency,
+                                    {{ station.constituency__region__title }} Region
+                                </div>
+                                <div class="col-1 d-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block">
+                                    <div class="row">
+                                        <div class="col">
+                                            {% if station.has_presidential_approval %}
+                                                <small
+                                                    class="bg-primary rounded-pill bold badge pointer"
+                                                    title="presidential votes approved">N</small>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col">
+                                            {% if station.has_parliamentary_approval %}
+                                                <small
+                                                    class="bg-info rounded-pill bold badge pointer"
+                                                    title="parliamentary votes approved">C</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if positions is not None %}
+                                <!--div class="col d-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block">
+                                    <small>Constituency: {{ station.constituency.title }}</small>
+                                    <small>Region: {{ station.constituency.region.title }}</small>
+                                </div-->
+                                {% else %}
+                                <!--div class="col-2 d-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block">
+                                    {{ station.constituency.title }}
+                                </div>
+                                <div class="col-2 d-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block">
+                                    {{ station.constituency.region.title }}
+                                </div-->
+                                {% endif %}
+                                <div class="col-2 col-xs-2 col-sm-2 col-md-1 col-lg-2 col-xl-5" align="right">
+                                    <div class="row">
+                                        <div class="col-10">
+                                            <div class="row">
+                                                <div class="col-4">
+                                                    <a href="/poll/result/station/{{ station.id }}/position/{{ station.presidential_position_id }}">
+                                                        {% if station.presidential_votes > 0 %}
+                                                        <div class="badge btn btn-warning text-dark rounded-pill bold pointer"
+                                                            title="{{ station.presidential_votes }} presidential votes"
+                                                        >
+                                                            <i class="fa fa-angle-up"></i>
+                                                            {{ station.presidential_votes }}
+                                                        </div>
+                                                        {% else %}
+                                                        <div class="badge btn btn-light text-dark rounded-pill bold pointer">
+                                                            -
+                                                        </div>
+                                                        {% endif %}
+                                                    </a>
+                                                </div>
+                                                <div class="col-4">
+                                                    <a href="/poll/result/station/{{ station.id }}/position/{{ station.parliamentary_position_id }}">
+                                                    {% if station.parliamentary_votes > 0 %}
+                                                    <div class="badge btn btn-warning text-dark rounded-pill bold pointer"
+                                                        title="{{ station.parliamentary_votes }} parliamentary votes"
+                                                    >
+                                                        <i class="fa fa-angle-up"></i>
+                                                        {{ station.parliamentary_votes }}
+                                                    </div>
+                                                    {% else %}
+                                                    <div class="badge btn btn-light text-dark rounded-pill bold pointer">
+                                                        -
+                                                    </div>
+                                                    {% endif %}
+                                                    </a>
+                                                </div>
+                                                <div class="col-4">
+                                                    {% if station.total_votes > 0 %}
+                                                    <div class="badge btn btn-info text-light rounded-pill bold pointer">
+                                                        {{ station.total_votes }}
+                                                    </div>
+                                                    {% else %}
+                                                    <div class="badge btn btn-light text-dark rounded-pill bold pointer">
+                                                        -
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-2">
+                                            <i class="fa-regular fa-circle{% if is_approved %}-check{% endif %}" title="has votes"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col" align="right" hidden>
+                                    <i class="fa-regular fa-circle" title="has votes"></i>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <!--positions-->
+                    {% if positions is not None %}
+                    <thead>
+                    <tr>
+                        <td>
+                            <div class="bold upper">Positions</div>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </thead>
+                    {% for position in positions %}
+                    <tr>
+                        <td class="upper" colspan="3">
+                            <div class="row">
+                                <div class="col-2"></div>
+                                <div class="col-4">
+                                    <a href="/poll/result/station/{{ station.id }}/position/{{ position.pk }}">
+                                        {{ position.title }}
+                                    </a>
+                                </div>
+                                <div class="col-1" align="right">
+                                </div>
+                                <div class="col-5 col-xs-5 col-sm-5 col-md-5 col-lg-5 col-xl-5" align="right">
+                                    <div class="row">
+                                        <div class="col-10">
+                                            {% if position.votes > 0 %}
+                                            <div class="badge rounded-pill bg-warning text-dark bold pointer">
+                                                <i class="fa fa-angle-up"></i>
+                                                {{ position.votes }}
+                                            </div>
+                                            {% else %}
+                                            <div class="badge rounded-pill bg-light text-dark bold">
+                                                -
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-2">
+                                            <i class="fa-regular fa-circle" title="has votes"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--td class="upper">{{ position.candidates }}</td>
+                            <td class="upper">{{ position.votes }}</td-->
+                        </td>
+                    </tr>
+
+                    <!--approvals-->
+                    {% if ready_for_approval %}
+                    {% if positions is not None %}
+                    {% if stations is not None %}
+                    {% if parties is not None %}
+                    <tr name="drawer_result_sheet_approvalsx" id="result_sheet_approvals_head">
+                        <td style="padding-top: 50px !important;" colspan="3">
+                            <div class="row">
+                                <div class="col">
+                                    <a name="approvals"></a>
+                                    APPROVALS
+                                </div>
+                                <div
+                                    class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-4"
+                                    align="right"
+                                >
+                                    {% if is_approved %}
+                                        <span class="badge rounded-pill bg-info">
+                                            <i class="fa fa-regular fa-circle-check"></i>
+                                            Approved
+                                        </span>
+                                    {% else %}
+                                    {% for k in agents %}
+                                        {% with agent=agents|get_item:k %}
+                                            {% if agent.approval and agent.approval.total_valid_votes %}
+                                            <span class="badge rounded-pill bg-primary">
+                                                <i class="fa fa-regular fa-circle-check"></i>
+                                                {{ agent.zone }}
+                                            </span>
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% endfor %}
+                                    {% endif %}
+                                </div>
+                                <div class="col-12 col-xs-12 col-sm-12 col-md-4 col-lg-3 col-xl-2">
+                                    <a href="#approvals"
+                                        onClick="
+                                            toggleByName('drawer_result_sheet_approvals', true)
+                                            toggleByName('drawer_result_sheet', false)
+                                            toggleByName('drawer_result_sheet_file', false)
+                                        "
+                                        class="col-12 btn btn-light rounded-pill"
+                                    >Approve Results</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <thead
+                        name="drawer_result_sheet_approvals"
+                        id="result_sheet_approvals_body"
+                        {% if not result_sheet or not ready_for_approval or is_approved %}hidden{% endif %}
+                    >
+                    <tr>
+                        <td style="padding-bottom: 50px !important;" colspan="3">
+                            <form
+                                id="result_sheet_approval_form"
+                                method="post"
+                                action="/poll/approval/station/{{ spk }}/position/{{ ppk }}"
+                                enctype="multipart/form-data"
+                                class="mx-3"
+                            >
+                                {% csrf_token %}
+                                <div class="mb-2" hidden>Are you sure you want to approve this result sheet?</div>
+                                <div class="my-2" hidden>To veryfy this result sheet, please check that all poll numbers entered agree with the numbers on the copy of the <a href="{% if result_sheet_url is not None and result_sheet.result_sheet.url is not None %}{{ result_sheet_url }}{% endif %}" target="blank">result sheet attached</a>.</div>
+                                <div class="my-2">Please validate the agents entries with the EC Summary Sheet (Pink Sheet) submitted and correct as appropriate.</div>
+                                <a href="{% if result_sheet_url is not None and result_sheet.result_sheet.url is not None %}{{ result_sheet_url }}{% endif %}"
+                                    target="_blank"
+                                >
+                                    View and review EC Summary Sheet
+                                </a>
+                                <hr />
+
+                                <div class="row my-3">
+                                    <div class="col-12 col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2 bold">
+                                        Approval Zone
+                                    </div>
+                                    <div class="col-12 col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-4 bold">
+                                        Approving Agent
+                                    </div>
+                                    <div class="col-12 col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2 bold" align="right">
+                                        Result Sheet Total
+                                    </div>
+                                    <div class="col-12 col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-1 bold" align="right">
+                                        Variance
+                                    </div>
+                                    <div class="col-12 col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2 bold" align="right">
+                                        EC Summary Sheet Total
+                                    </div>
+                                    <div class="col-1" align="right">
+                                        <i class="fa fa-regular fa-circle"></i>
+                                    </div>
+                                    <div class="col-12 my-1"><hr /></div>
+                                </div>
+                                {% for k in agents %}
+                                    {% with agent=agents|get_item:k %}
+                                    <div class="row p-2 my-2 {% if agent.approval %}bg-light{% endif %} border-bottom border-dark-subtle">
+                                        <div class="col-12 col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2 {% if agent.is_approving %}bold{% endif %}">
+                                            {{ agent.zone }}
+                                        </div>
+                                        <div class="col-12 col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-4">
+                                            <div class="{% if agent.is_approving %}bold{% endif %}">
+                                                {{ agent.agent }}
+                                                {{ agent.user.email }}
+                                            </div>
+                                            {% if agent.is_approving %}
+                                            <input name="approving_agent_user_id" type="hidden" value="{{ agent.user.pk }}" />
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-12 my-1 d-block d-xs-block d-sm-block d-md-none d-lg-none d-xl-none"><hr /></div>
+                                        <div class="col-12 col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2" align="right">
+                                            <div hidden>Result Sheet Total:</div>
+                                            <div class="input-shell {% if agent.is_approving %}bold{% endif %}" name="total-votes-valid" id="approval_total_valid_votes">
+                                                {% if agent.approval and agent.approval.total_valid_votes %}{{ agent.approval.total_valid_votes }}{% else %}-{% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-12 my-1 d-block d-xs-block d-sm-block d-md-none d-lg-none d-xl-none"><hr /></div>
+                                        <div class="col-12 col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-1" align="right">
+                                            <div hidden>Variance:</div>
+                                            <div class="input-shell {% if agent.is_approving %}bold{% endif %}"
+                                                id="{% if agent.is_approving %}total-variance{% endif %}" name="{% if agent.is_approving %}total-variance{% endif %}"
+                                            >
+                                                {% if agent.approval and agent.approval.variance %}{{ agent.approval.variance }}{% else %}-{% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-12 my-1 d-block d-xs-block d-sm-block d-md-none d-lg-none d-xl-none"><hr /></div>
+                                        <div class="col-12 col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2" align="right">
+                                            <div hidden>EC Summary Sheet Total:</div>
+                                            {% if agent.is_approving %}
+                                                <input name="ec_summary_total" id="ec_summary_total"
+                                                    class="form-control"
+                                                    value="{{ agent.approval.ec_summary_total }}" type="number" min="0"
+                                                    placeholder="enter the EC Summary total"
+                                                    onkeyup="ecSummaryTotalChange()" />
+                                            {% else %}
+                                                <div class="{% if agent.is_approving %}bold{% endif %}">
+                                                {% if agent.approval.ec_summary_total %}
+                                                    {{ agent.approval.ec_summary_total }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-1" align="right">
+                                            {% if agent.approval %}
+                                                <i class="fa fa-regular fa-circle-check"></i>
+                                            {% else %}
+                                                <i class="fa fa-regular fa-circle"></i>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endwith %}
+                                {% endfor %}
+                                <div id="approval_certify" class="mt-2 mb-2 row" hidden>
+                                    <div class="mb-2 mt-1 col-12 bold">Certify Result Approval</div>
+                                    <div class="col-1" align="right">
+                                        <input type="checkbox" id="approval_certify_check" name="approval_certify_check" onchange="ecSummaryTotalChange()" />
+                                    </div>
+                                    <div class="col-11">
+                                        <label for="approval_certify_check">
+                                            I have read and verified the numbers entered on the result and found in accordance with the numbers on this form.
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <input name="approve_result_sheet_file" type="hidden" class="form-control" value="{% if result_sheet_url is not None and result_sheet.result_sheet.url is not None %}{{ result_sheet_url }}{% endif %}" />
+                                    <button type="button" class="col-12 btn btn-light" onClick="
+                                        toggleByName('drawer_result_sheet_approvals', false)
+                                        toggleByName('drawer_result_sheet', false)
+                                        toggleByName('drawer_result_sheet_file', false)
+                                    ">Cancel</button>
+                                    <button hidden id="btn_approve" class="col-12 btn btn-primary mb-2">Approve</button>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                    </thead>
+                    {% endif %}
+                    {% endif %}
+                    {% endif %}
+                    {% endif %}
+                    <!--approvals-->
+
+
+                    <!--parties-->
+                    {% if parties is not None %}
+                    <form
+                        id="result_sheet_form"
+                        method="post"
+                        action="/poll/result/station/{{ spk }}/position/{{ ppk }}"
+                        enctype="multipart/form-data"
+                    >
+                        {% csrf_token %}
+
+                        <!--ec summary sheet-->
+                        <tr>
+                            <td style="padding-top: 50px !important;" colspan="3">
+                                <div class="row">
+                                    <div class="col">
+                                        <a name="file"></a>
+                                        EC SUMMARY SHEET
+                                        <input name="station"
+                                                class="form-control" type="hidden"
+                                                value="{{ station.id }}" />
+                                        <input name="position"
+                                                class="form-control" type="hidden"
+                                                value="{{ position.pk }}" />
+                                    </div>
+                                    <div class="col-12 col-xs-12 col-sm-12 col-md-4 col-lg-3 col-xl-2">
+                                        {% if result_sheet_url is not None and result_sheet.result_sheet.url is not None %}
+                                        <a href="{{ result_sheet_url }}"
+                                            target="_blank"
+                                            class="col-12 btn btn-light rounded-pill"
+                                        >
+                                            <i class="fa fa-regular fa-circle-check"></i>
+                                            Download file
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-12 col-xs-12 col-sm-12 col-md-4 col-lg-3 col-xl-2">
+                                        <a href="#file"
+                                            onClick="
+                                                toggleByName('drawer_result_sheet_approvals', false)
+                                                toggleByName('drawer_result_sheet', false)
+                                                toggleByName('drawer_result_sheet_file', true)
+                                            "
+                                            class="col-12 btn btn-light rounded-pill"
+                                        >Upload ECSS</a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <thead
+                            name="drawer_result_sheet_file"
+                            id="drawer_result_sheet_header"
+                            hidden
+                        >
+                        <tr>
+                            <td style="padding-bottom: 50px !important;" colspan="3">
+                                <div class="row">
+                                    <div class="col-11">
+                                        <div class="row">
+                                            <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-3">
+                                                Upload Statement of Poll and Declaration of Results
+                                            </div>
+                                            <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-3">
+                                                {% if result_sheet_url is not None and result_sheet.result_sheet.url is not None %}
+                                                <input type="hidden" name="result_sheet_file" class="form-control" value="{{ result_sheet_url }}" />
+                                                {% endif %}
+                                                <input type="file" name="result_sheet" class="form-control" placeholder="upload result sheet" />
+                                                <i>(requirements JPEG, MPEG, GIF, 4kb in size)</i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-1" align="right">
+                                        <i class="fa fa-regular fa-circle"></i>
+                                    </div>
+                                </div>
+                                <div align="right">
+                                    <a href="#"
+                                        class="col-12x btn btn-primary rounded-pill"
+                                        onClick="result_sheet_form.submit()"
+                                    >Upload EC Summary Sheet</a>
+                                    <button type="button"
+                                        class="col-12x btn btn-light rounded-pill"
+                                        onClick="
+                                            toggleByName('drawer_result_sheet_approvals', false)
+                                            toggleByName('drawer_result_sheet', false)
+                                            toggleByName('drawer_result_sheet_file', false)
+                                        "
+                                    >Cancel</button>
+                                </div>
+                            </td>
+                        </tr>
+                        </thead>
+                        <!--ec summary sheet-->
+
+                        <thead
+                            name="drawer_result_sheet"
+                            id="drawer_result_sheet_header"
+                        >
+                            <tr>
+                                <td style="padding-top: 50px !important;" colspan="3">
+                                    <div class="row">
+                                        <div class="col upper">
+                                            <a name="sheet"></a>
+                                            RESULT SHEET
+                                        </div>
+                                        <div class="col-12 col-xs-12 col-sm-12 col-md-4 col-lg-3 col-xl-2">
+                                            <a href="#"
+                                                onClick="result_sheet_form.submit()"
+                                                class="col-12 btn btn-primary rounded-pill"
+                                            >Save Poll Results</a>
+                                        </div>
+                                        <div class="col-12 col-xs-12 col-sm-12 col-md-4 col-lg-3 col-xl-2">
+                                            <a href="#sheet"
+                                                onClick="
+                                                    toggleByName('drawer_result_sheet_approvals', false)
+                                                    toggleByName('drawer_result_sheet', true)
+                                                    toggleByName('drawer_result_sheet_file', false)
+                                                "
+                                                class="col-12 btn btn-light rounded-pill"
+                                            >Update Poll</a>
+                                        </div>    
+                                    </div>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody
+                            name="drawer_result_sheet"
+                            id="drawer_result_sheet_body"
+                            {% if result_sheet %}hidden{% endif %}
+                        >
+                            <tr>
+                                <td colspan="3">
+                                    <div class="row" class="bold">
+                                        <div
+                                            class="col-2 col-xs-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 bold"
+                                        >
+                                            Party
+                                        </div>
+                                        <div
+                                            class="col-6 col-xs-6 col-sm-6 col-md-7 col-lg-4 col-xl-4 bold"
+                                        >
+                                            Candidate Name
+                                        </div>
+                                        <div
+                                            class="col-3 col-xs-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 bold"
+                                        >
+                                            Votes
+                                        </div>
+                                        <div
+                                            class="col-lg-4 col-xl-4 d-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block bold"
+                                        >
+                                            Votes (in words)
+                                        </div>
+                                        <div class="col-1" align="right">
+                                            <i class="fa fa-regular fa-circle"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% for party in parties %}
+                            <tr>
+                                <td colspan="3">
+                                    <div class="row">
+                                        <div
+                                            class="col-2 col-xs-2 col-sm-2 col-md-1 col-lg-1 col-xl-1"
+                                        >
+                                            {{ party.code }}
+                                        </div>
+                                        {% for candidate in party.party_candidates|slice:":1" %}
+                                            {% with candidate=candidate %}
+                                                <div
+                                                    class="col-6 col-xs-6 col-sm-6 col-md-7 col-lg-4 col-xl-4"
+                                                >
+                                                    {{ candidate.full_name }}
+                                                </div>
+                                                <div
+                                                    class="col-3 col-xs-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 bold"
+                                                >
+                                                    <input name="candidate" value="{{ candidate.pk }}" class="form-control" type="hidden" placeholder="enter count for candidate" />
+                                                    {% if candidate.station_results %}
+                                                        {% for result in candidate.station_results|slice:":1" %}
+                                                        <input name="votes" value="{{ result.votes }}"
+                                                                class="form-control" type="number" min="0"
+                                                                placeholder="enter count for candidate"
+                                                                data-for="{{ candidate.party.code }}-votes-in-words"
+                                                                onchange="convertVotes(this)"
+                                                                onblur="convertVotes(this)"
+                                                                />
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <input name="votes" value="{% if candidate is not None %}0{% else %}{% endif %}"
+                                                                class="form-control" type="number" min="0"
+                                                                placeholder="enter count for candidate"
+                                                                data-for="{{ candidate.party.code }}-votes-in-words"
+                                                                onchange="convertVotes(this)"
+                                                                onblur="convertVotes(this)"
+                                                                />
+                                                    {% endif %}
+                                                </div>
+                                                <div
+                                                    class="col-lg-4 col-xl-4 d-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block bold"
+                                                    id="{{ candidate.party.code }}-votes-in-words">
+                                                </div>
+                                                <div class="col-1" align="right">
+                                                    <i class="fa fa-regular fa-circle"></i>
+                                                </div>
+                                            {% endwith %}
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td colspan="3">
+                                    <div class="row">
+                                        <div
+                                            class="col-2 col-xs-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 bold"
+                                        >
+                                            A
+                                        </div>
+                                        <div
+                                            class="col-6 col-xs-6 col-sm-6 col-md-7 col-lg-4 col-xl-4 bold"
+                                        >
+                                            Total Valid Votes
+                                        </div>
+                                        <div
+                                            class="col-3 col-xs-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 bold"
+                                        >
+                                            <div name="total-votes-valid" class="bold input-shell"></div>
+                                            <input type="hidden" id="total_valid_votes" name="total_valid_votes" value="{% if result_sheet %}{{ result_sheet.total_valid_votes }}{% else %}0{% endif %}" />
+                                        </div>
+                                        <div
+                                            class="col-lg-4 col-xl-4 d-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block bold"
+                                            id="total-votes-in-words-valid"
+                                        >
+                                        </div>
+                                        <div class="col-1" align="right">
+                                            <i class="fa fa-regular fa-circle"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="bold">
+                                <td colspan="3">
+                                    <div class="row">
+                                        <div
+                                            class="col-2 col-xs-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 bold"
+                                        >
+                                            B
+                                        </div>
+                                        <div
+                                            class="col-6 col-xs-6 col-sm-6 col-md-7 col-lg-4 col-xl-4 bold"
+                                        >
+                                            Total Rejected Votes
+                                        </div>
+                                        <div
+                                            class="col-3 col-xs-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 bold"
+                                        >
+                                            <input id="total-votes-invalid"
+                                                name="total_invalid_votes"
+                                                value="{% if result_sheet %}{{ result_sheet.total_invalid_votes }}{% else %}0{% endif %}"
+                                                class="form-control" type="number" min="0"
+                                                placeholder="enter count for candidate"
+                                                onchange="calculateTotalVotes()"
+                                                onblur="calculateTotalVotes()"
+                                                />
+                                        </div>
+                                        <div
+                                            class="col-lg-4 col-xl-4 d-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block bold"
+                                            id="total-votes-in-words-invalid"
+                                        >
+                                        </div>
+                                        <div class="col-1" align="right">
+                                            <i class="fa fa-regular fa-circle"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="bold">
+                                <td colspan="3">
+                                    <div class="row">
+                                        <div
+                                            class="col-2 col-xs-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 bold"
+                                        >
+                                            C
+                                        </div>
+                                        <div
+                                            class="col-6 col-xs-6 col-sm-6 col-md-7 col-lg-4 col-xl-4 bold"
+                                        >
+                                            Total Votes in Ballot Box
+                                        </div>
+                                        <div
+                                            class="col-3 col-xs-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 bold"
+                                        >
+                                            <div id="total-votes" class="bold input-shell"></div>
+                                            <input type="hidden" id="total_votes" name="total_votes" value="{% if result_sheet %}{{ result_sheet.total_votes }}{% else %}0{% endif %}" />
+                                        </div>
+                                        <div
+                                            class="col-lg-4 col-xl-4 d-none d-xs-none d-sm-none d-md-none d-lg-block d-xl-block bold"
+                                            id="total-votes-in-words">
+                                        </div>
+                                        <div class="col-1" align="right">
+                                            <i class="fa fa-regular fa-circle"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <div align="right">
+                                        <div class="row mt-3">
+                                            <div class="col"></div>
+                                            <button class="col-12 col-xs-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 btn btn-primary mb-2">Save Poll Results</button>
+                                            <a href="/poll/result/stations" class="btn btn-light col-12 col-xs-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 btn btn-light mb-2">Cancel</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </form>
+                    {% endif %}
+                    <!--parties-->
+
+                    {% endfor %}
+                    {% endif %}
+                    <!--positions-->
+                {% endfor %}
+        
+                {% if positions is None %}
+                <tr>
+                    <td colspan="3">
+                        <div class="row form-actions mb-6">
+                            <div class="col d-none d-xs-none d-sm-none d-md-block d-lg-block d-xl-block"></div>
+                            <a href="{{ station_prev_link }}" class="btn btn-light col-12 col-xs-12 col-sm-12 col-md-12 col-lg-1 col-xl-1 mb-1">Previous</a>
+                            <a href="{{ station_next_link }}" class="btn btn-light col-12 col-xs-12 col-sm-12 col-md-12 col-lg-1 col-xl-1 mb-1">Next</a>
+                        </div>
+                    
+                        <div class="form-actions mb-6 mt-6">
+                            <br /><br /><br /><br />
+                        </div>
+                    </td>
+                </tr>
+                {% endif %}
+            
+                <!--stations-->
+            </table>
+        </div>
+    </div>            
+</div>
+
+<!-- Approval Modal -->
+{% if spk is not None and ppk is not None %}
+<div class="modal fade" id="approveResult" tabindex="-1" aria-labelledby="approveResultLabel" aria-hidden="true">
+    <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h1 class="modal-title fs-5 mx-3" id="approveResultLabel">Approve Results</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form
+                id="result_sheet_approval_form"
+                method="post"
+                action="/poll/approval/station/{{ spk }}/position/{{ ppk }}"
+                enctype="multipart/form-data"
+                class="mx-3"
+            >
+                {% csrf_token %}
+                <div class="mb-2">Are you sure you want to approve this result sheet?</div>
+                <div class="mb-2" hidden>To veryfy this result sheet, please check that all poll numbers entered agree with the numbers on the copy of the <a href="{% if result_sheet_url is not None and result_sheet.result_sheet.url is not None %}{{ result_sheet_url }}{% endif %}" target="blank">result sheet attached</a>.</div>
+                <div class="my-5">
+                    <div class="my-3">
+                        Result Sheet Total:
+                        <span name="total-votes-valid" id="approval_total_valid_votes" class="bold input-shell">1283</span>
+                    </div>
+                    <div class="my-3">
+                        EC Summary Sheet Total:
+                        <input name="ec_summary_total" id="ec_summary_total"
+                                class="form-control bold"
+                                value="" type="number" min="0"
+                                placeholder="enter the EC Summary total"
+                                onkeyup="ecSummaryTotalChange()" />
+                        <small>Please enter the Total Valid Votes from the <a href="{% if result_sheet_url is not None and result_sheet.result_sheet.url is not None %}{{ result_sheet_url }}{% endif %}" target="blank">EC Summary Sheet submitted</a></small>
+                    </div>
+                    <div class="my-3">
+                        Variance:
+                        <span id="total-variance" name="total-variance" class="bold input-shell">-</span>
+                    </div>
+                </div>
+                {% if agents is not None %}
+                <div class="my-2">
+                    <div class="my-3">
+                        <div><small class="bold pointer">Agents Approving:</small></div>
+                        <div class="row">
+                        {% for k in agents %}
+                            {% with agent=agents|get_item:k %}
+                                <div class="col-1" align="center">
+                                    <i class="fa fa-regular fa-circle"></i>
+                                </div>
+                                <div class="col-11">
+                                    <small>
+                                        {{ agent.agent }} {{ agent.zone }}
+                                        {{ agent.user.email }}
+                                    </small>
+                                </div>
+                            {% endwith %}
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div id="approval_certify" class="mt-2 mb-2 row" hidden>
+                    <div class="mb-2 mt-1 col-12 bold">Certify</div>
+                    <div class="col-1">
+                        <input type="checkbox" id="approval_certify_check" name="approval_certify_check" onchange="ecSummaryTotalChange()" />
+                    </div>
+                    <div class="col-11">
+                        <label for="approval_certify_check">
+                            I have read and verified the numbers entered on the result and found in accordance with the numbers on this form.
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    {% with approving_agent=agents|get_item:'station' %}
+                        <input name="user_id" type="hidden" value="{{ approving_agent.user.pk }}" />
+                    {% endwith %}
+
+                    <input name="approve_result_sheet_file" type="hidden" class="form-control" value="{% if result_sheet_url is not None and result_sheet.result_sheet.url is not None %}{{ result_sheet_url }}{% endif %}" />
+
+                    <button type="button" class="col-12 btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button hidden id="btn_approve" class="col-12 btn btn-primary mb-2">Approve</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+<!-- Approval Modal -->
+
+
+
+<!--{-% include 'layout/table.html' with title=title row_link="poll/result/" next_link=next_link prev_link=prev_link delete_link='#' columns=columns highlight_column='candidate_details' data=data user=user only%-}-->
+
+
+<script>
+    function convertNumberToWords(number) {
+        const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+        const tens = ['', 'ten', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+        const teens = ['eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+        const thousands = ['', 'thousand', 'million', 'billion', 'trillion'];
+        
+        // Edge case for zero
+        if (number === 0) {
+            return 'zero'.toUpperCase();
+        }
+        if (number === 10) {
+            return 'ten'.toUpperCase();
+        }
+        
+        // Convert number to string and pad with zeros as needed
+        let numString = number.toString();
+        while (numString.length % 3 !== 0) {
+            numString = '0' + numString;
+        }
+        
+        // Split string into groups of three digits
+        const numGroups = numString.match(/.{3}/g);
+        
+        // Convert each group to words
+        const words = [];
+        for (let i = 0; i < numGroups.length; i++) {
+        const group = numGroups[i];
+        const hundreds = ones[group[0]] ? ones[group[0]] + ' hundred' : '';
+        let tensAndOnes = '';
+        if (group[1] === '1') {
+            tensAndOnes = teens[group[2] - 1];
+        } else {
+            tensAndOnes = tens[group[1]] + ' ' + ones[group[2]];
+        }
+        if (hundreds || tensAndOnes) {
+            words.push(hundreds + ' ' + tensAndOnes);
+        }
+        if (i < numGroups.length - 1 && group !== '000') {
+            words.push(thousands[numGroups.length - i - 1]);
+        }
+        }
+        
+        return words.join(' ').toUpperCase();
+    }
+
+    function convertVotes(source) {
+        try {
+            let destination = source.getAttribute('data-for')
+            let d = document.getElementById(destination)
+            let number = parseInt(source.value, 10)
+            d.innerHTML = convertNumberToWords(number)
+            calculateTotalVotes()
+        } catch (error) {
+            console.log(error, 'e')
+        }
+    }
+
+    function calculateTotalVotes() {
+        let doms = document.getElementsByName('votes')
+
+        let total_figures_valids = document.getElementsByName('total-votes-valid')
+        let total_words_valid = document.getElementById('total-votes-in-words-valid')
+        let total_figures_invalid = document.getElementById('total-votes-invalid')
+        let total_words_invalid = document.getElementById('total-votes-in-words-invalid')
+        let total_figures = document.getElementById('total-votes')
+        let total_words = document.getElementById('total-votes-in-words')
+        let total_valid_votes = document.getElementById('total_valid_votes')
+        let total_votes = document.getElementById('total_votes')
+
+        let total = 0,
+            total_valid = 0,
+            total_invalid = Number(total_figures_invalid?.value || 0)
+
+        doms.forEach((dom) => {
+            total_valid = Number(total_valid) + Number(dom?.value || 0)
+        })
+        total = Number(total_valid) + total_invalid
+        if (total_figures_valids) {
+            total_figures_valids.forEach(function(d) {
+                d.innerHTML = total_valid
+            })
+            if (total_valid_votes) {
+                total_valid_votes.value = total_valid
+            }
+        }
+        if (total_figures) {
+            total_figures.innerHTML = total
+            total_votes.value = total
+        }
+        if (total_words) {
+            total_words.innerHTML = convertNumberToWords(total)
+        }
+        if (total_words_valid) {
+            total_words_valid.innerHTML = convertNumberToWords(total_valid)
+        }
+        if (total_words_invalid) {
+            total_words_invalid.innerHTML = convertNumberToWords(total_invalid)
+        }
+    }
+
+    function ecSummaryTotalChange() {
+        const btn_approve = document.getElementById('btn_approve')
+        const total_variance = document.getElementById('total-variance')
+        const ec_summary_total = document.getElementById('ec_summary_total')
+        const total_valid_votes = document.getElementById('approval_total_valid_votes')
+        const approval_certify = document.getElementById('approval_certify')
+        const approval_certify_check = document.getElementById('approval_certify_check')
+        approval_certify.hidden = ec_summary_total.value <= 0
+        btn_approve.hidden = ec_summary_total.value <= 0 || approval_certify_check.checked === false
+        total_variance.innerHTML = Number(total_valid_votes.innerHTML) - ec_summary_total.value
+    }
+
+    function preventSubmit(evt) {
+        evt = evt || window.event;
+        if (evt.keyCode === 13) {
+            return false
+        }
+        return true
+    }
+    if (document.getElementById('ec_summary_total')) {
+        document.getElementById('ec_summary_total').onkeydown = function(evt) {
+            return preventSubmit(evt)
+        }
+    }
+    if (document.getElementById('approval_certify_check')) {
+        document.getElementById('approval_certify_check').onkeydown = function(evt) {
+            return preventSubmit(evt)
+        }
+    }
+
+    calculateTotalVotes()
+</script>
+
+{% endif %}
+{% endblock %}

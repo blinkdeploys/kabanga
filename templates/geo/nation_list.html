@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+{% include 'layout/table.html' with title=title row_link="geo/nation/" next_link=next_link prev_link=prev_link delete_link='#' columns=columns highlight_column='title' data=data user=user request=request only%}
+
+{% endif %}
+
+{% endblock %}

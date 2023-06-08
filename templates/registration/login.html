@@ -1,0 +1,83 @@
+<!-- templates/registration/login.html -->
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-md-center">
+
+    <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4"
+      align="center"
+    >
+      <h2>Kabanga</h2>
+
+      <a
+        class="btn btn-light rounded-pill col-12 mt-3 mb-3"
+        href="{% url 'password_reset' %}"
+      >
+        <i class="fa-brands fa-google"></i>
+        Login with Google
+      </a>
+      <a
+        class="btn btn-light rounded-pill col-12 mt-3 mb-3"
+        href="{% url 'password_reset' %}"
+      >
+        <i class="fa-brands fa-facebook"></i>
+        Login with Facebook
+      </a>
+      <a
+        class="btn btn-light rounded-pill col-12 mt-3 mb-3"
+        href="{% url 'password_reset' %}"
+      >
+        <i class="fa-brands fa-pinterest"></i>
+        Login with Pinterest
+      </a>
+
+      <div
+        class="col-12 mt-1 mb-1"
+      >- or -</div>
+
+      <form method="post">
+
+        {% csrf_token %}
+        <!--{{ form.as_p }}-->
+
+        <div class="row">
+
+          <div class="fieldWrapper col-12 mt-3 mb-3">
+            {{ form.username.errors }}
+            <div hidden>{{ form.username.label_tag }}</div>
+            <div>{{ form.username }}</div>
+          </div>
+
+          <div class="fieldWrapper col-12 mt-3 mb-3">
+            {{ form.password.errors }}
+            <div hidden>{{ form.password.label_tag }}</div>
+            <div>{{ form.password }}</div>
+          </div>
+  
+          <div class="col-12">
+            <div class="row mx-1">
+              <a
+                class="btn col-12 mb-3"
+                href="{% url 'password_reset' %}"
+              >forgot password?</a>
+              <button
+                class="btn btn-primary col-12 mb-3"
+                type="submit"
+              >Log In</button>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <a
+        class="btn btn-light rounded-pill col-12 mt-3 mb-3"
+        href="{% url 'password_reset' %}"
+      >New Account</a>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

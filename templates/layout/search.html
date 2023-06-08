@@ -1,0 +1,7 @@
+<form
+    action="/{{ search_url }}"
+    method="{% if method is not None %}{{ method }}{% else %}get{% endif %}"
+>
+    <input name="q" value="{{ q }}" type="text"
+        class="form-control" placeholder="search..." />
+</form>

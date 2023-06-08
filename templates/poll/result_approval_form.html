@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+{% include 'layout/form.html' with title="Agent" list_path="geo/result_approvals" elements=form user=user only%}
+
+{% endblock %}

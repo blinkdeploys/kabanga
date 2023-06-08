@@ -1,0 +1,10 @@
+{% if user.is_authenticated %}
+<div>
+    <button class="btn btn-dark text-light rounded-pill"
+        style="overflow:hidden; height: 35px;"
+        onclick="enqueue_collation(this{% if enqueue_callback %}, {{ enqueue_callback }}{% endif %})">Collate Results</button>
+    <a href="#" class="text-dark" title="displayed results may not be complete. Click on the collate results button to update collations from votes."><i class="fa-regular fa-circle-question"></i></a>
+    <input type="hidden" id="rq-key" value="" />
+    <div class="mt-3" id="rq-result"></div>
+</div>
+{% endif %}

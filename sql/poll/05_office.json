@@ -1,0 +1,7 @@
+{
+    "name": "office",
+    "data": [
+        {"id": 1, "level": 4, "title": "Presidential"},
+        {"id": 2, "level": 2, "title": "Parliamentary"}
+    ]
+}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% if user.is_authenticated %}
+{% load filtertags %}
+
+{% include '../parliamentary_report.html' with title=title zone=zone columns=columns reports=reports seats=seats zone_type=zone_type sub_zone_type=sub_zone_type sub_zone_type_plural=sub_zone_type_plural sub_zone_link=sub_zone_link super_zone=super_zone super_zone_link=super_zone_link user=user only%}
+
+{% endif %}
+{% endblock %}

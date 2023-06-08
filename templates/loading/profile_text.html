@@ -1,0 +1,29 @@
+{% if mode == 'top' %}
+<div name="top-presidential-profile-loading-0">
+    <div class="row">
+        <div class="col-4"></div>
+        <div class="col-4 asset-loading asset-loading-text"></div>
+        <div class="col-4"></div>
+    </div>
+    <div class="row">
+        <div class="col-4"></div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col"></div>
+                <div class="col-3 asset-loading asset-loading-text"></div>
+                <div class="col-1 asset-loading asset-loading-text"></div>
+                <div class="col"></div>
+            </div>
+        </div>
+        <div class="col-4"></div>
+    </div>
+</div>
+{% else %}
+<div name="{% if id is not None %}{{ name }}{% else %}top-presidential-profile-loading-1{% endif %}">
+    <div class="row">
+        <div class="col-11 asset-loading asset-loading-text"></div>
+        <div class="col-3 asset-loading asset-loading-text"></div>
+        <div class="col-1 asset-loading asset-loading-text"></div>
+    </div>
+</div>
+{% endif %}

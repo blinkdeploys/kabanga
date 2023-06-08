@@ -1,0 +1,140 @@
+<nav
+    class="navbar navbar-expand-lg navbar-light bg-light fixed-top"
+>
+
+    <a href="/">
+        <h2 class="logo navbar-brand p-3">
+            Kabanga
+        </h2>
+    </a>
+
+    <button  class="navbar-toggler" type="button" data-bs-toggle="collapse"  data-bs-target="#navbarNavAltMarkup"  aria-controls="navbarNavAltMarkup"  aria-expanded="false"  aria-label="Toggle navigation"
+        style="margin: 0px 16px;"
+    >
+        <span  class="navbar-toggler-icon"></span>
+    </button>
+
+    <div  class="collapse navbar-collapse" id="navbarNavAltMarkup"
+        style="margin: 0px 16px;"
+    >
+
+        <ul class="navbar-nav mr-auto">
+
+            <li class="nav-item active">
+                <input
+                    class="font-control"
+                    placeholder="search stores and items..."
+                    type="text"
+                    style="margin: 0px; padding: 10px 15px; width: 500px;"
+                    />
+            </li>
+
+            {% with show=False %}
+            {% if show == True %}
+            
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="/poll/result/stations/">Polls</a>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#approvals" id="approvalsDropDown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Poll Approvals
+                </a>
+                <div class="dropdown-menu" aria-labelledby="approvalsDropDown">
+                    <a class="dropdown-item" href="/poll/result_approvals" hidden>Collation Progress</a>
+                    <a class="dropdown-item" href="/poll/result_approvals/presidential/constituency/">Presidential Approvals (Constituency)</a>
+                    <a class="dropdown-item" href="/poll/result_approvals/presidential/region/">Presidential Approvals (Regional)</a>
+                    <a class="dropdown-item" href="/poll/result_approvals/presidential/nation/">Presidential Approvals (National)</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/poll/result_approvals/parliamentary/constituency/">Parliamentary Approvals (Constituency)</a>
+                    <a class="dropdown-item" href="/poll/result_approvals/parliamentary/region/">Parliamentary Approvals (Regional)</a>
+                    <a class="dropdown-item" href="/poll/result_approvals/parliamentary/nation/">Parliamentary Approvals (National)</a>
+                </div>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#geo" id="electionDropDown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Reports
+                </a>
+                <div class="dropdown-menu" aria-labelledby="electionDropDown">
+                    <a class="dropdown-item" href="#">Collation Progress</a>
+                    <a class="dropdown-item" href="#">Approval Progress</a>
+                    <!--
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/reports/parliamentary/nation/">Parliamentary Collation Results</a>
+                    <a class="dropdown-item" href="/reports/presidential/nation/">Presidential Collation Results</a>
+                    <a class="dropdown-item" href="{--% url 'presidential_win_report' %--}">Presidential Wins</a>
+                    <a class="dropdown-item" href="{--% url 'parliamentary_seat_report' %--}">Parliamentary Seats</a>
+                    -->
+                </div>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#geo" id="electionDropDown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Election
+                </a>
+                <div class="dropdown-menu" aria-labelledby="electionDropDown">
+                    <a class="dropdown-item" href="/people/agents">Agents</a>
+                    <a class="dropdown-item" href="/people/candidates">Candidates</a>
+                    <a class="dropdown-item" href="/people/parties">Parties</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/poll/events">Events</a>
+                    <a class="dropdown-item" href="/poll/offices">Offices</a>
+                    <a class="dropdown-item" href="/poll/positions">Positions</a>
+                </div>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#geo" id="geoDropDown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Geo
+                </a>
+                <div class="dropdown-menu" aria-labelledby="geoDropDown">
+                    <a class="dropdown-item" href="/geo/stations">Polling Stations</a>
+                    <a class="dropdown-item" href="/geo/constituencies">Constituencies</a>
+                    <a class="dropdown-item" href="/geo/regions">Regions</a>
+                    <a class="dropdown-item" href="/geo/nations">Nations</a>
+                </div>
+            </li>
+            
+            {% endif %}
+            
+            {% endif %}
+            {% endwith %}
+
+            <li class="nav-item d-block d-xs-block d-sm-block d-md-block d-lg-none d-xl-none">
+                {% if user.is_authenticated %}
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                    <a class="nav-link" href="{% url 'login' %}">Login</a>
+                {% endif %}
+            </li>
+
+        </ul>
+    </div>
+    <div class="navbar-text d-none d-xs-none d-sm-none d-md-block d-lg-block d-xl-block">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-3" align="right">
+                {% if user.is_authenticated %}
+                <a class="nav-link" href="{% url 'logout' %}">
+                    <!-- Logout -->
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </a>
+                {% else %}
+                    <a class="nav-link" href="{% url 'login' %}">Login</a>
+                {% endif %}
+            </div>
+            <div class="col-3" align="right">
+                <a class="nav-link" href="{% url 'logout' %}"
+                    style="position: relative;"
+                >
+                    <div class="badge rounded-pill bg-danger f8"
+                        style="position: absolute; top:0px; right:-10px;"
+                    >0</div>
+                    <i class="fa fa-cart-shopping"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>

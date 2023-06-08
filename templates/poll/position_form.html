@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+{% include 'layout/form.html' with title="Position" list_path="poll/positions" elements=form user=user only%}
+
+{% endblock %}

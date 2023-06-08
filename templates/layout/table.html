@@ -1,0 +1,118 @@
+{% block content %}
+{% if user.is_authenticated %}
+{% load filtertags %}
+<div
+  class="container"
+>
+  <!--style="width:850px; margin-left:auto; margin-right:auto;"-->
+
+
+  <div class="row mt-4 mb-4">
+    <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 mb-2">
+      <h2 class="">{{ title }}</h2>
+    </div>
+    <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+      {% include 'layout/search.html' with search_url=row_link q=request.GET.q only%}
+    </div>
+  </div>
+  
+  <div class="col">
+    <table class="table table-responsive table-hover">
+      <thead>
+          <tr>
+            <th class="scope">ID</th>
+            {% for column in columns %}
+              <th
+                class="scope {% if column.title == highlight_column %}{% else %}d-none d-xs-none d-sm-none d-md-table-cell d-lg-table-cell d-xl-table-cell{% endif %}"
+                {% if column.width %}width="{{column.width}}%"{% endif %}
+              >
+                <div align="{% if column.type %}{% if column.type == 'vote_count' %}right{% endif %}{% endif %}">
+                  {{ column.title|ucwords }}
+                </div>
+              </th>
+            {% endfor %}
+            <th class="scope">
+              <div align="center">
+                <span class="d-none d-xs-none d-sm-none d-md-block d-lg-block d-xl-block">Actions</span>
+                <i class="fa-regular fa-trash-can d-block d-xs-block d-sm-block d-md-none d-lg-none d-xl-none"></i>
+              </div>
+            </th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for row in data %}
+            <tr scope="row">
+              <td width="5%"><input type="checkbox" /></td>
+              {% for column in columns %}
+                {% if column.title == highlight_column %}
+                  <td>
+                    <div class="row">
+                      {% if row.photo is not None %}
+                        <div class="col-2 col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2" align="center">
+                          <img
+                            src="{{ row.photo|clean_url|safe }}"
+                            width="50" height="50"
+                            class="avatar"
+                          />
+                        </div>
+                      {% endif %}
+                      <div class="col">
+                        <a href="/{{ row_link|concat:row.pk }}">
+                          {{ row|get_item:column.title }}
+                        </a>
+                      </div>
+                    </div>
+                  </td>
+                {% else %}
+                  <td
+                    class="d-none d-xs-none d-sm-none d-md-table-cell d-lg-table-cell d-xl-table-cell" width="{% if column.width is not None %}{{ column.width }}{% else %}15{% endif %}%"
+                    align="{% if column.type %}{% if column.type == 'vote_count' %}right{% endif %}{% endif %}"
+                  >
+                    {% if column.type %}
+                      {% if column.type == 'vote_count' %}
+                          {% if row|get_item:column.title > 0 %}
+                          <div class="badge rounded-pill bg-info">
+                            {{ row|get_item:column.title }}
+                          </div>
+                          {% else %}
+                          -
+                          {% endif %}
+                      {% endif %}
+                    {% else %}
+                      {{ row|get_item:column.title }}
+                    {% endif %}
+                  </td>
+                {% endif %}
+              {% endfor %}
+              <td width="5%" align="right">
+                <a href="{{ delete_link }}" class="btn btn-light">
+                  <span class="d-none d-xs-none d-sm-none d-md-block d-lg-block d-xl-block">Delete</span>
+                  <i class="fa-regular fa-trash-can d-block d-xs-block d-sm-block d-md-none d-lg-none d-xl-none"></i>
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+      </tbody>
+    </table>
+    
+    <div class="form-actions mb-6">
+      <div class="row">
+        <a href="{{ prev_link }}" class="btn btn-light col-12 col-xs-12 col-sm-12 col-md-12 col-lg-1 col-xl-1 mb-1">Previous</a>
+        <a href="{{ next_link }}" class="btn btn-light col-12 col-xs-12 col-sm-12 col-md-12 col-lg-1 col-xl-1 mb-1">Next</a>
+      </div>
+    </div>
+
+    <div class="form-actions mb-6 mt-6">
+      <br /><br /><br /><br />
+    </div>
+  </div>
+
+  <script>
+    window.onload = function() {
+      correctImageSrc()
+    };
+  </script>
+
+</div>
+{% endif %}
+{% endblock %}

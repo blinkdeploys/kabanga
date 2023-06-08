@@ -1,0 +1,6 @@
+{
+    "name": "nation",
+    "data": [
+        {"id": 1, "code": "GH", "title": "REPUBLIC OF GHANA"}
+    ]
+}
